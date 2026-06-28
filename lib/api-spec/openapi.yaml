@@ -1,22 +1,33 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: LocSetu Connect API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
+  - name: auth
+  - name: workers
+  - name: jobs
+  - name: reviews
+  - name: saved_workers
+  - name: notifications
+  - name: buzz
+  - name: emergency
+  - name: pricing
+  - name: learning
+  - name: availability
+  - name: portfolio
+  - name: sos
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +35,1233 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: Registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /workers:
+    get:
+      operationId: listWorkers
+      tags: [workers]
+      parameters:
+        - name: skill
+          in: query
+          schema:
+            type: string
+        - name: location
+          in: query
+          schema:
+            type: string
+        - name: available
+          in: query
+          schema:
+            type: boolean
+        - name: gender
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of workers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WorkerProfile"
+
+  /workers/top:
+    get:
+      operationId: getTopWorkers
+      tags: [workers]
+      responses:
+        "200":
+          description: Top rated workers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WorkerProfile"
+
+  /workers/me:
+    get:
+      operationId: getMyWorkerProfile
+      tags: [workers]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: My worker profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkerProfile"
+    post:
+      operationId: createWorkerProfile
+      tags: [workers]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkerProfileInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkerProfile"
+    patch:
+      operationId: updateWorkerProfile
+      tags: [workers]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkerProfileUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkerProfile"
+
+  /workers/skills:
+    get:
+      operationId: listSkills
+      tags: [workers]
+      responses:
+        "200":
+          description: List of available skills
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Skill"
+
+  /workers/{id}:
+    get:
+      operationId: getWorker
+      tags: [workers]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Worker profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkerProfile"
+
+  /jobs:
+    get:
+      operationId: listJobs
+      tags: [jobs]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: List of jobs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Job"
+    post:
+      operationId: createJob
+      tags: [jobs]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Job"
+
+  /jobs/{id}:
+    get:
+      operationId: getJob
+      tags: [jobs]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Job"
+    patch:
+      operationId: updateJob
+      tags: [jobs]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Job"
+
+  /reviews:
+    post:
+      operationId: createReview
+      tags: [reviews]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
+
+  /reviews/{workerId}:
+    get:
+      operationId: getWorkerReviews
+      tags: [reviews]
+      parameters:
+        - name: workerId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
+
+  /saved-workers:
+    get:
+      operationId: listSavedWorkers
+      tags: [saved_workers]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: Saved workers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WorkerProfile"
+
+  /saved-workers/{workerId}:
+    post:
+      operationId: saveWorker
+      tags: [saved_workers]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: workerId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "201":
+          description: Saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SavedWorker"
+    delete:
+      operationId: unsaveWorker
+      tags: [saved_workers]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: workerId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Unsaved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /notifications:
+    get:
+      operationId: listNotifications
+      tags: [notifications]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+
+  /notifications/{id}/read:
+    patch:
+      operationId: markNotificationRead
+      tags: [notifications]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Marked read
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
+
+  /buzz:
+    get:
+      operationId: listBuzz
+      tags: [buzz]
+      responses:
+        "200":
+          description: Buzz posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BuzzPost"
+    post:
+      operationId: createBuzz
+      tags: [buzz]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BuzzInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BuzzPost"
+
+  /emergency/workers:
+    get:
+      operationId: listEmergencyWorkers
+      tags: [emergency]
+      parameters:
+        - name: skill
+          in: query
+          schema:
+            type: string
+        - name: location
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Available emergency workers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EmergencyWorker"
+
+  /emergency/request:
+    post:
+      operationId: createEmergencyRequest
+      tags: [emergency]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmergencyRequestInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmergencyRequest"
+
+  /emergency/requests:
+    get:
+      operationId: listMyEmergencyRequests
+      tags: [emergency]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: My emergency requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EmergencyRequest"
+
+  /pricing:
+    get:
+      operationId: listPricing
+      tags: [pricing]
+      parameters:
+        - name: skill
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Service pricing
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ServicePricing"
+
+  /learning/courses:
+    get:
+      operationId: listCourses
+      tags: [learning]
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: language
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Courses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Course"
+
+  /learning/progress:
+    get:
+      operationId: getLearningProgress
+      tags: [learning]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: Learning progress
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CourseProgress"
+
+  /learning/progress/{courseId}:
+    post:
+      operationId: updateCourseProgress
+      tags: [learning]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CourseProgressInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CourseProgress"
+
+  /availability/{workerId}:
+    get:
+      operationId: getWorkerAvailability
+      tags: [availability]
+      parameters:
+        - name: workerId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Availability
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Availability"
+
+  /availability:
+    post:
+      operationId: setAvailability
+      tags: [availability]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AvailabilityInput"
+      responses:
+        "200":
+          description: Set
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Availability"
+
+  /portfolio/{workerId}:
+    get:
+      operationId: getPortfolio
+      tags: [portfolio]
+      parameters:
+        - name: workerId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Portfolio items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PortfolioItem"
+
+  /portfolio:
+    post:
+      operationId: addPortfolioItem
+      tags: [portfolio]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PortfolioItemInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PortfolioItem"
+
+  /portfolio/{id}:
+    delete:
+      operationId: deletePortfolioItem
+      tags: [portfolio]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /sos:
+    post:
+      operationId: sendSos
+      tags: [sos]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SosInput"
+      responses:
+        "201":
+          description: SOS sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /sos/my:
+    get:
+      operationId: listMySosEvents
+      tags: [sos]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: My SOS events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SosEvent"
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     HealthStatus:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+
+    MessageResponse:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+
+    User:
+      type: object
+      required: [id, name, email, role]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+        phone:
+          type: ["string", "null"]
+        avatarUrl:
+          type: ["string", "null"]
+        city:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    AuthResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+
+    RegisterInput:
+      type: object
+      required: [name, email, password, role]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+        phone:
+          type: string
+        gender:
+          type: string
+        city:
+          type: string
+
+    LoginInput:
+      type: object
+      required: [identifier, password]
+      properties:
+        identifier:
+          type: string
+          description: Email address or phone number
+        password:
+          type: string
+
+    WorkerProfile:
+      type: object
+      required: [id, userId, name, skills, location, rating, reviewCount, isAvailable, isVerified, completedJobs, languages]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        name:
+          type: string
+        avatarUrl:
+          type: ["string", "null"]
+        skills:
+          type: array
+          items:
+            type: string
+        location:
+          type: string
+        rating:
+          type: number
+        reviewCount:
+          type: integer
+        isAvailable:
+          type: boolean
+        isVerified:
+          type: boolean
+        completedJobs:
+          type: integer
+        experience:
+          type: ["string", "null"]
+        languages:
+          type: array
+          items:
+            type: string
+        bio:
+          type: ["string", "null"]
+        hourlyRate:
+          type: ["number", "null"]
+        gender:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+
+    WorkerProfileInput:
+      type: object
+      required: [skills, location]
+      properties:
+        skills:
+          type: array
+          items:
+            type: string
+        location:
+          type: string
+        experience:
+          type: string
+        bio:
+          type: string
+        hourlyRate:
+          type: number
+        languages:
+          type: array
+          items:
+            type: string
+
+    WorkerProfileUpdate:
+      type: object
+      properties:
+        skills:
+          type: array
+          items:
+            type: string
+        location:
+          type: string
+        experience:
+          type: string
+        bio:
+          type: string
+        hourlyRate:
+          type: number
+        isAvailable:
+          type: boolean
+        languages:
+          type: array
+          items:
+            type: string
+
+    Skill:
+      type: object
+      required: [id, name, icon]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        icon:
+          type: string
+
+    Job:
+      type: object
+      required: [id, title, skill, location, status, customerId]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        skill:
+          type: string
+        location:
+          type: string
+        status:
+          type: string
+        customerId:
+          type: integer
+        workerId:
+          type: ["integer", "null"]
+        budget:
+          type: ["number", "null"]
+        createdAt:
+          type: string
+        completedAt:
+          type: ["string", "null"]
+
+    JobInput:
+      type: object
+      required: [title, skill, location]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        skill:
+          type: string
+        location:
+          type: string
+        budget:
+          type: number
+        workerId:
+          type: integer
+
+    JobUpdate:
       type: object
       properties:
         status:
           type: string
-      required:
-        - status
+        workerId:
+          type: integer
+        budget:
+          type: number
 
+    Review:
+      type: object
+      required: [id, workerId, customerId, rating]
+      properties:
+        id:
+          type: integer
+        workerId:
+          type: integer
+        customerId:
+          type: integer
+        rating:
+          type: number
+        comment:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    ReviewInput:
+      type: object
+      required: [workerId, rating]
+      properties:
+        workerId:
+          type: integer
+        rating:
+          type: number
+        comment:
+          type: string
+
+    SavedWorker:
+      type: object
+      required: [id, customerId, workerId]
+      properties:
+        id:
+          type: integer
+        customerId:
+          type: integer
+        workerId:
+          type: integer
+
+    Notification:
+      type: object
+      required: [id, userId, title, body, type, isRead]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        title:
+          type: string
+        body:
+          type: string
+        type:
+          type: string
+        isRead:
+          type: boolean
+        createdAt:
+          type: string
+
+    BuzzPost:
+      type: object
+      required: [id, userId, content]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        content:
+          type: string
+        imageUrl:
+          type: ["string", "null"]
+        likesCount:
+          type: integer
+        createdAt:
+          type: string
+        userName:
+          type: ["string", "null"]
+
+    BuzzInput:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+        imageUrl:
+          type: string
+
+    EmergencyWorker:
+      type: object
+      required: [id, userId, name, skills, location, rating, reviewCount, isAvailable, estimatedArrival]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        name:
+          type: string
+        avatarUrl:
+          type: ["string", "null"]
+        skills:
+          type: array
+          items:
+            type: string
+        location:
+          type: string
+        rating:
+          type: number
+        reviewCount:
+          type: integer
+        isAvailable:
+          type: boolean
+        isVerified:
+          type: boolean
+        completedJobs:
+          type: integer
+        phone:
+          type: ["string", "null"]
+        estimatedArrival:
+          type: integer
+
+    EmergencyRequest:
+      type: object
+      required: [id, customerId, skill, location, status]
+      properties:
+        id:
+          type: integer
+        customerId:
+          type: integer
+        workerId:
+          type: ["integer", "null"]
+        skill:
+          type: string
+        location:
+          type: string
+        description:
+          type: ["string", "null"]
+        status:
+          type: string
+        estimatedArrival:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+
+    EmergencyRequestInput:
+      type: object
+      required: [skill, location]
+      properties:
+        skill:
+          type: string
+        location:
+          type: string
+        description:
+          type: string
+
+    ServicePricing:
+      type: object
+      required: [id, skill, serviceName, minPrice, avgPrice, maxPrice, unit]
+      properties:
+        id:
+          type: integer
+        skill:
+          type: string
+        serviceName:
+          type: string
+        serviceNameHi:
+          type: ["string", "null"]
+        serviceNameMr:
+          type: ["string", "null"]
+        minPrice:
+          type: integer
+        avgPrice:
+          type: integer
+        maxPrice:
+          type: integer
+        unit:
+          type: string
+
+    Course:
+      type: object
+      required: [id, title, category, description, duration, language, isFree]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        thumbnailUrl:
+          type: ["string", "null"]
+        videoUrl:
+          type: ["string", "null"]
+        duration:
+          type: integer
+        language:
+          type: string
+        isFree:
+          type: boolean
+        createdAt:
+          type: string
+
+    CourseProgress:
+      type: object
+      required: [id, userId, courseId, progressPercent]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        courseId:
+          type: integer
+        progressPercent:
+          type: integer
+        completedAt:
+          type: ["string", "null"]
+        certificateIssued:
+          type: boolean
+
+    CourseProgressInput:
+      type: object
+      required: [progressPercent]
+      properties:
+        progressPercent:
+          type: integer
+
+    Availability:
+      type: object
+      required: [id, workerId, date, status]
+      properties:
+        id:
+          type: integer
+        workerId:
+          type: integer
+        date:
+          type: string
+        status:
+          type: string
+        note:
+          type: ["string", "null"]
+
+    AvailabilityInput:
+      type: object
+      required: [date, status]
+      properties:
+        date:
+          type: string
+        status:
+          type: string
+        note:
+          type: string
+
+    PortfolioItem:
+      type: object
+      required: [id, workerId, title, mediaUrl, mediaType]
+      properties:
+        id:
+          type: integer
+        workerId:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        mediaUrl:
+          type: string
+        mediaType:
+          type: string
+        beforeUrl:
+          type: ["string", "null"]
+        afterUrl:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    PortfolioItemInput:
+      type: object
+      required: [title, mediaUrl]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        mediaUrl:
+          type: string
+        mediaType:
+          type: string
+        beforeUrl:
+          type: string
+        afterUrl:
+          type: string
+
+    SosEvent:
+      type: object
+      required: [id, userId]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        latitude:
+          type: ["string", "null"]
+        longitude:
+          type: ["string", "null"]
+        locationAddress:
+          type: ["string", "null"]
+        emergencyContact:
+          type: ["string", "null"]
+        message:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    SosInput:
+      type: object
+      properties:
+        latitude:
+          type: string
+        longitude:
+          type: string
+        locationAddress:
+          type: string
+        emergencyContact:
+          type: string
+        message:
+          type: string
