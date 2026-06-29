@@ -47,7 +47,8 @@ router.get("/learning/progress", authMiddleware, async (req, res): Promise<void>
 
 router.post("/learning/progress/:courseId", authMiddleware, async (req, res): Promise<void> => {
   const userId = (req as any).user.userId;
-  const courseId = parseInt(req.params.courseId, 10);
+  const rawCourse = Array.isArray(req.params.courseId) ? req.params.courseId[0] : req.params.courseId;
+  const courseId = parseInt(rawCourse, 10);
   const { progressPercent } = req.body;
 
   if (isNaN(courseId)) { res.status(400).json({ error: "Invalid course id" }); return; }

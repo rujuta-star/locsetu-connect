@@ -83,6 +83,7 @@ export default function JobDetailPage() {
     if (!job.workerId) return;
     createReview.mutate({
       workerId: job.workerId,
+      jobId: job.id,
       rating: reviewRating,
       comment: reviewComment || undefined,
     });
@@ -133,10 +134,12 @@ export default function JobDetailPage() {
           <CardContent className="space-y-3">
             <div className="flex items-center gap-3">
               <Avatar className="h-9 w-9">
-                <AvatarFallback className="bg-primary/10 text-primary text-xs">C</AvatarFallback>
+                <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                  {((job as any).customerName ?? t("customer")).charAt(0).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <div>
-                <p className="text-sm font-medium">{t("customer")} #{job.customerId}</p>
+                <p className="text-sm font-medium">{(job as any).customerName ?? `${t("customer")} #${job.customerId}`}</p>
                 <p className="text-xs text-muted-foreground">{t("customer")}</p>
               </div>
             </div>
@@ -145,10 +148,12 @@ export default function JobDetailPage() {
                 <Separator />
                 <div className="flex items-center gap-3">
                   <Avatar className="h-9 w-9">
-                    <AvatarFallback className="bg-primary/10 text-primary text-xs">W</AvatarFallback>
+                    <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                      {((job as any).workerName ?? t("worker")).charAt(0).toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-sm font-medium">{t("worker")} #{job.workerId}</p>
+                    <p className="text-sm font-medium">{(job as any).workerName ?? `${t("worker")} #${job.workerId}`}</p>
                     <p className="text-xs text-muted-foreground">{t("worker")}</p>
                   </div>
                 </div>

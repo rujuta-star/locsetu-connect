@@ -6,7 +6,8 @@ import { authMiddleware } from "../lib/auth";
 const router = Router();
 
 router.get("/availability/:workerId", async (req, res): Promise<void> => {
-  const workerId = parseInt(req.params.workerId, 10);
+  const rawWid = Array.isArray(req.params.workerId) ? req.params.workerId[0] : req.params.workerId;
+  const workerId = parseInt(rawWid, 10);
   if (isNaN(workerId)) { res.status(400).json({ error: "Invalid worker id" }); return; }
 
   const availability = await db.select().from(workerAvailabilityTable)
@@ -26,20 +27,21 @@ router.post("/availability", authMiddleware, async (req, res): Promise<void> => 
 
   if (!worker) { res.status(404).json({ error: "Worker profile not found" }); return; }
 
+  const dateStr = String(date);
   const existing = await db.select().from(workerAvailabilityTable)
-    .where(and(eq(workerAvailabilityTable.workerId, worker.id), eq(workerAvailabilityTable.date, date)))
+    .where(and(eq(workerAvailabilityTable.workerId, worker.id), eq(workerAvailabilityTable.date, dateStr)))
     .limit(1);
 
   if (existing.length > 0) {
     const [updated] = await db.update(workerAvailabilityTable)
       .set({ status, note: note ?? null })
-      .where(and(eq(workerAvailabilityTable.workerId, worker.id), eq(workerAvailabilityTable.date, date)))
+      .where(and(eq(workerAvailabilityTable.workerId, worker.id), eq(workerAvailabilityTable.date, dateStr)))
       .returning();
     res.json(updated);
   } else {
     const [created] = await db.insert(workerAvailabilityTable).values({
       workerId: worker.id,
-      date,
+      date: dateStr,
       status,
       note: note ?? null,
     }).returning();
@@ -49,7 +51,7 @@ router.post("/availability", authMiddleware, async (req, res): Promise<void> => 
 
 router.delete("/availability/:date", authMiddleware, async (req, res): Promise<void> => {
   const userId = (req as any).user.userId;
-  const { date } = req.params;
+  const date = Array.isArray(req.params.date) ? req.params.date[0] : req.params.date;
 
   const [worker] = await db.select().from(workerProfilesTable)
     .where(eq(workerProfilesTable.userId, userId)).limit(1);

@@ -101,7 +101,7 @@ router.post("/buzz", authMiddleware, async (req, res): Promise<void> => {
   const [post] = await db.insert(buzzPostsTable).values({
     userId,
     title,
-    description,
+    description: description ?? "",
     category,
     city,
     area: area ?? null,
@@ -117,7 +117,8 @@ router.post("/buzz", authMiddleware, async (req, res): Promise<void> => {
 router.delete("/buzz/:id", authMiddleware, async (req, res): Promise<void> => {
   const userId = (req as any).user.userId;
   const role = (req as any).user.role;
-  const id = parseInt(req.params.id, 10);
+  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const id = parseInt(raw, 10);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
   const condition = role === "admin"

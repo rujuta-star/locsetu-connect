@@ -43,7 +43,7 @@ router.get("/jobs", authMiddleware, async (req, res): Promise<void> => {
   const status = typeof req.query.status === "string" ? req.query.status : undefined;
   const queryRole = typeof req.query.role === "string" ? req.query.role : undefined;
 
-  let allJobs;
+  let allJobs: (typeof jobsTable.$inferSelect)[] = [];
   if (role === "worker") {
     const [wp] = await db.select().from(workerProfilesTable).where(eq(workerProfilesTable.userId, userId)).limit(1);
     if (wp) {
@@ -77,7 +77,7 @@ router.post("/jobs", authMiddleware, async (req, res): Promise<void> => {
 
   const [job] = await db.insert(jobsTable).values({
     title,
-    description,
+    description: description ?? "",
     skill,
     location,
     customerId: userId,

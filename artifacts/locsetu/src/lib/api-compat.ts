@@ -10,8 +10,6 @@ import {
   getMarkNotificationReadMutationOptions,
   getCreateReviewMutationOptions,
   getUpdateJobMutationOptions,
-  saveWorker,
-  unsaveWorker,
 } from "@workspace/api-client-react";
 
 function getAuthHeaders(): Record<string, string> {
@@ -24,6 +22,11 @@ async function apiFetch(path: string, options?: RequestInit) {
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }
+
+type MutationCallbacks = {
+  onSuccess?: () => void;
+  onError?: (err?: unknown) => void;
+};
 
 export function useLogout() {
   return { mutate: () => {}, isPending: false };
@@ -49,89 +52,103 @@ export function useListAllUsers(params?: { role?: string; page?: number; limit?:
   });
 }
 
-export function useVerifyWorker(options?: { mutation?: { onSuccess?: () => void } }) {
+export function useVerifyWorker(options?: { mutation?: MutationCallbacks }) {
   return useMutation({
     mutationFn: ({ workerId, status }: { workerId: number; status: string }) =>
       apiFetch(`/admin/workers/${workerId}/verify`, { method: "POST", body: JSON.stringify({ status }) }),
     onSuccess: options?.mutation?.onSuccess,
+    onError: options?.mutation?.onError,
   });
 }
 
-export function useAcceptJob(options?: { mutation?: { onSuccess?: () => void } }) {
+export function useAcceptJob(options?: { mutation?: MutationCallbacks }) {
   return useMutation({
     mutationFn: (id: number) => apiFetch(`/jobs/${id}/accept`, { method: "POST" }),
     onSuccess: options?.mutation?.onSuccess,
+    onError: options?.mutation?.onError,
   });
 }
 
-export function useRejectJob(options?: { mutation?: { onSuccess?: () => void } }) {
+export function useRejectJob(options?: { mutation?: MutationCallbacks }) {
   return useMutation({
     mutationFn: (id: number) => apiFetch(`/jobs/${id}/reject`, { method: "POST" }),
     onSuccess: options?.mutation?.onSuccess,
+    onError: options?.mutation?.onError,
   });
 }
 
-export function useCompleteJob(options?: { mutation?: { onSuccess?: () => void } }) {
+export function useCompleteJob(options?: { mutation?: MutationCallbacks }) {
   return useMutation({
     mutationFn: (id: number) => apiFetch(`/jobs/${id}/complete`, { method: "POST" }),
     onSuccess: options?.mutation?.onSuccess,
+    onError: options?.mutation?.onError,
   });
 }
 
-export function useCancelJob(options?: { mutation?: { onSuccess?: () => void } }) {
+export function useCancelJob(options?: { mutation?: MutationCallbacks }) {
   return useMutation({
     mutationFn: (id: number) => apiFetch(`/jobs/${id}/cancel`, { method: "POST" }),
     onSuccess: options?.mutation?.onSuccess,
+    onError: options?.mutation?.onError,
   });
 }
 
-export function useCreateReview(options?: { mutation?: { onSuccess?: () => void } }) {
+export function useCreateReview(options?: { mutation?: MutationCallbacks }) {
   return useMutation({
-    mutationFn: (data: { workerId: number; rating: number; comment?: string }) =>
+    mutationFn: (data: { workerId: number; jobId?: number; rating: number; comment?: string }) =>
       apiFetch("/reviews", { method: "POST", body: JSON.stringify(data) }),
     onSuccess: options?.mutation?.onSuccess,
+    onError: options?.mutation?.onError,
   });
 }
 
-export function useMarkAllNotificationsRead(options?: { mutation?: { onSuccess?: () => void } }) {
+export function useMarkAllNotificationsRead(options?: { mutation?: MutationCallbacks }) {
   return useMutation({
     mutationFn: () => apiFetch("/notifications/read-all", { method: "POST" }),
     onSuccess: options?.mutation?.onSuccess,
+    onError: options?.mutation?.onError,
   });
 }
 
-export function useMarkNotificationRead(options?: { mutation?: { onSuccess?: () => void } }) {
+export function useMarkNotificationRead(options?: { mutation?: MutationCallbacks }) {
   return useMutation({
     mutationFn: (id: number) => apiFetch(`/notifications/${id}/read`, { method: "PATCH" }),
     onSuccess: options?.mutation?.onSuccess,
+    onError: options?.mutation?.onError,
   });
 }
 
-export function useSaveWorker(options?: { mutation?: { onSuccess?: () => void } }) {
+export function useSaveWorker(options?: { mutation?: MutationCallbacks }) {
   return useMutation({
-    mutationFn: ({ workerId }: { workerId: number }) => saveWorker(workerId),
+    mutationFn: ({ workerId }: { workerId: number }) =>
+      apiFetch("/saved-workers", { method: "POST", body: JSON.stringify({ workerId }) }),
     onSuccess: options?.mutation?.onSuccess,
+    onError: options?.mutation?.onError,
   });
 }
 
-export function useUnsaveWorker(options?: { mutation?: { onSuccess?: () => void } }) {
+export function useUnsaveWorker(options?: { mutation?: MutationCallbacks }) {
   return useMutation({
-    mutationFn: ({ workerId }: { workerId: number }) => unsaveWorker(workerId),
+    mutationFn: ({ workerId }: { workerId: number }) =>
+      apiFetch(`/saved-workers/${workerId}`, { method: "DELETE" }),
     onSuccess: options?.mutation?.onSuccess,
+    onError: options?.mutation?.onError,
   });
 }
 
-export function useUpdateMyWorkerProfile(options?: { mutation?: { onSuccess?: () => void } }) {
+export function useUpdateMyWorkerProfile(options?: { mutation?: MutationCallbacks }) {
   return useMutation({
     ...getUpdateWorkerProfileMutationOptions(),
     onSuccess: options?.mutation?.onSuccess,
+    onError: options?.mutation?.onError,
   });
 }
 
-export function useDeleteBuzzPost(options?: { mutation?: { onSuccess?: () => void } }) {
+export function useDeleteBuzzPost(options?: { mutation?: MutationCallbacks }) {
   return useMutation({
     mutationFn: (id: number) => apiFetch(`/buzz/${id}`, { method: "DELETE" }),
     onSuccess: options?.mutation?.onSuccess,
+    onError: options?.mutation?.onError,
   });
 }
 

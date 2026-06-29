@@ -14,7 +14,8 @@ router.post("/reviews", authMiddleware, async (req, res): Promise<void> => {
     return;
   }
 
-  const { workerId, jobId, rating, comment } = parsed.data;
+  const { workerId, rating, comment } = parsed.data;
+  const jobId = typeof req.body?.jobId === "number" ? req.body.jobId : (req.body?.jobId ? parseInt(req.body.jobId, 10) : undefined);
 
   const [review] = await db.insert(reviewsTable).values({
     workerId,

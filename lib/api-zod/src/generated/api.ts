@@ -148,7 +148,8 @@ export const UpdateWorkerProfileBody = zod.object({
   "bio": zod.string().optional(),
   "hourlyRate": zod.number().optional(),
   "isAvailable": zod.boolean().optional(),
-  "languages": zod.array(zod.string()).optional()
+  "languages": zod.array(zod.string()).optional(),
+  "idProofUrl": zod.string().optional()
 })
 
 export const UpdateWorkerProfileResponse = zod.object({
@@ -227,7 +228,8 @@ export const CreateJobBody = zod.object({
   "skill": zod.string(),
   "location": zod.string(),
   "budget": zod.number().optional(),
-  "workerId": zod.number().optional()
+  "workerId": zod.number().optional(),
+  "scheduledAt": zod.string().optional()
 })
 
 
@@ -257,7 +259,11 @@ export const UpdateJobParams = zod.object({
 export const UpdateJobBody = zod.object({
   "status": zod.string().optional(),
   "workerId": zod.number().optional(),
-  "budget": zod.number().optional()
+  "budget": zod.number().optional(),
+  "title": zod.string().optional(),
+  "description": zod.string().optional(),
+  "location": zod.string().optional(),
+  "scheduledAt": zod.string().nullish()
 })
 
 export const UpdateJobResponse = zod.object({
@@ -373,8 +379,15 @@ export const ListBuzzResponse = zod.array(ListBuzzResponseItem)
 
 
 export const CreateBuzzBody = zod.object({
-  "content": zod.string(),
-  "imageUrl": zod.string().optional()
+  "content": zod.string().optional(),
+  "imageUrl": zod.string().optional(),
+  "title": zod.string(),
+  "description": zod.string().optional(),
+  "category": zod.string(),
+  "city": zod.string(),
+  "area": zod.string().optional(),
+  "contactPhone": zod.string().optional(),
+  "expiresAt": zod.string().optional()
 })
 
 
