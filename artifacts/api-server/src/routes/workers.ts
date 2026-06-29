@@ -138,9 +138,6 @@ router.put("/workers/me", authMiddleware, async (req, res): Promise<void> => {
 
 router.get("/workers", async (req, res): Promise<void> => {
   const params = ListWorkersQueryParams.safeParse(req.query);
-  const page = (params.success && params.data.page) ? params.data.page : 1;
-  const limit = (params.success && params.data.limit) ? params.data.limit : 12;
-  const offset = (page - 1) * limit;
 
   const results = await db.select().from(workerProfilesTable)
     .innerJoin(usersTable, eq(workerProfilesTable.userId, usersTable.id))
@@ -150,15 +147,11 @@ router.get("/workers", async (req, res): Promise<void> => {
     const p = params.success ? params.data : {};
     if (p.skill && !r.worker_profiles.skills.some(s => s.toLowerCase().includes((p.skill as string).toLowerCase()))) return false;
     if (p.location && !r.worker_profiles.location.toLowerCase().includes((p.location as string).toLowerCase())) return false;
-    if (p.minRating && r.worker_profiles.rating < (p.minRating as number)) return false;
     if (p.available !== undefined && r.worker_profiles.isAvailable !== p.available) return false;
     return true;
   });
 
-  const total = filtered.length;
-  const paginated = filtered.slice(offset, offset + limit);
-
-  const workers = paginated.map(r => ({
+  const workers = filtered.map(r => ({
     id: r.worker_profiles.id,
     userId: r.worker_profiles.userId,
     name: r.users.name,
@@ -174,12 +167,7 @@ router.get("/workers", async (req, res): Promise<void> => {
     languages: r.worker_profiles.languages,
   }));
 
-  res.json({
-    workers,
-    total,
-    page,
-    totalPages: Math.ceil(total / limit),
-  });
+  res.json(workers);
 });
 
 router.get("/workers/top", async (_req, res): Promise<void> => {
