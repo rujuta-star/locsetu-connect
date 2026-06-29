@@ -4,17 +4,19 @@ import { Skeleton } from "@/components/ui/skeleton";
 import WorkerCard from "@/components/WorkerCard";
 import { useListSavedWorkers } from "@workspace/api-client-react";
 import { useLocation } from "wouter";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Heart, Search } from "lucide-react";
 
 export default function SavedWorkersPage() {
   const [, navigate] = useLocation();
+  const { t } = useLanguage();
   const { data: savedWorkers, isLoading } = useListSavedWorkers();
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       <div className="flex items-center gap-3 mb-6">
         <Heart className="w-6 h-6 text-red-500" />
-        <h1 className="text-2xl font-bold">Saved Workers</h1>
+        <h1 className="text-2xl font-bold">{t("savedWorkers")}</h1>
       </div>
 
       {isLoading ? (
@@ -24,10 +26,10 @@ export default function SavedWorkersPage() {
       ) : !savedWorkers || savedWorkers.length === 0 ? (
         <div className="text-center py-20">
           <Heart className="w-14 h-14 text-muted-foreground mx-auto mb-4" />
-          <h2 className="text-xl font-semibold mb-2">No saved workers yet</h2>
-          <p className="text-muted-foreground mb-6">Save workers you like for quick access later</p>
+          <h2 className="text-xl font-semibold mb-2">{t("noSavedWorkers")}</h2>
+          <p className="text-muted-foreground mb-6">{t("noSavedWorkersDesc")}</p>
           <Button onClick={() => navigate("/search")} className="gap-2">
-            <Search className="w-4 h-4" /> Browse Workers
+            <Search className="w-4 h-4" /> {t("browseWorkers")}
           </Button>
         </div>
       ) : (

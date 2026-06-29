@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useCreateJob, useListSkills, getListJobsQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { AlertCircle, Briefcase } from "lucide-react";
 
 const schema = z.object({
@@ -32,6 +33,7 @@ export default function PostJobPage() {
   const [, navigate] = useLocation();
   const [error, setError] = useState("");
   const qc = useQueryClient();
+  const { t } = useLanguage();
   const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
   const preselectedWorkerId = params.get("workerId");
 
@@ -76,8 +78,8 @@ export default function PostJobPage() {
             <Briefcase className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold">Post a Job</h1>
-            <p className="text-sm text-muted-foreground">Describe what you need and find the right worker</p>
+            <h1 className="text-2xl font-bold">{t("postAJob")}</h1>
+            <p className="text-sm text-muted-foreground">{t("describeJobNeed")}</p>
           </div>
         </div>
 
@@ -92,7 +94,7 @@ export default function PostJobPage() {
               )}
 
               <div className="space-y-1.5">
-                <Label>Service Type</Label>
+                <Label>{t("serviceType")}</Label>
                 <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                   {skills?.map(s => (
                     <button
@@ -113,16 +115,16 @@ export default function PostJobPage() {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="title">Job Title</Label>
-                <Input id="title" placeholder="e.g. Fix leaking kitchen faucet" {...register("title")} />
+                <Label htmlFor="title">{t("jobTitle")}</Label>
+                <Input id="title" placeholder={t("jobTitlePlaceholder")} {...register("title")} />
                 {errors.title && <p className="text-xs text-destructive">{errors.title.message}</p>}
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="description">Job Description</Label>
+                <Label htmlFor="description">{t("jobDescription")}</Label>
                 <Textarea
                   id="description"
-                  placeholder="Describe the work needed, any specific requirements, urgency, etc."
+                  placeholder={t("jobDescriptionPlaceholder")}
                   rows={4}
                   {...register("description")}
                 />
@@ -131,10 +133,10 @@ export default function PostJobPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label>Location</Label>
+                  <Label>{t("cityLocation")}</Label>
                   <Select onValueChange={v => setValue("location", v)}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select city" />
+                      <SelectValue placeholder={t("selectCity")} />
                     </SelectTrigger>
                     <SelectContent>
                       {LOCATIONS.map(loc => (
@@ -146,30 +148,28 @@ export default function PostJobPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="budget">Budget (₹) — Optional</Label>
-                  <Input id="budget" type="number" placeholder="e.g. 500" {...register("budget")} />
+                  <Label htmlFor="budget">{t("budgetOptionalLabel")}</Label>
+                  <Input id="budget" type="number" placeholder={t("budgetPlaceholder")} {...register("budget")} />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="scheduledAt">Preferred Date & Time — Optional</Label>
+                <Label htmlFor="scheduledAt">{t("preferredDateOptional")}</Label>
                 <Input id="scheduledAt" type="datetime-local" {...register("scheduledAt")} />
               </div>
 
               {preselectedWorkerId && (
                 <Alert>
-                  <AlertDescription>
-                    This job will be sent directly to the selected worker.
-                  </AlertDescription>
+                  <AlertDescription>{t("workerPreselectedNotice")}</AlertDescription>
                 </Alert>
               )}
 
               <div className="flex gap-3 pt-2">
                 <Button type="button" variant="outline" onClick={() => window.history.back()} className="flex-1">
-                  Cancel
+                  {t("cancel")}
                 </Button>
                 <Button type="submit" className="flex-1" disabled={createJob.isPending}>
-                  {createJob.isPending ? "Posting..." : "Post Job"}
+                  {createJob.isPending ? t("posting") : t("postJob")}
                 </Button>
               </div>
             </form>

@@ -14,7 +14,9 @@ router.post("/auth/register", async (req, res): Promise<void> => {
     return;
   }
 
-  const { name, email, phone, password, role } = parsed.data;
+  const { name, password, role } = parsed.data;
+  const email = parsed.data.email?.trim() || null;
+  const phone = parsed.data.phone?.trim() || null;
 
   if (!email && !phone) {
     res.status(400).json({ error: "Email or phone is required" });

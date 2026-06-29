@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import WorkerCard from "@/components/WorkerCard";
 import { useListWorkers, useListSkills } from "@workspace/api-client-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Search, MapPin, SlidersHorizontal, X, Users, Zap, Droplets, Hammer, Paintbrush, Scissors, Home, Car, Wrench, BookOpen, Monitor } from "lucide-react";
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -26,6 +27,7 @@ const SKILL_COLORS: Record<string, string> = {
 };
 
 export default function SearchPage() {
+  const { t } = useLanguage();
   const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
 
   const [skill, setSkill] = useState(params.get("skill") ?? "");
@@ -65,7 +67,7 @@ export default function SearchPage() {
               <Search className="w-4 h-4 text-primary flex-shrink-0" />
               <input
                 type="text"
-                placeholder="Search by skill (e.g. plumber, electrician)"
+                placeholder={t("searchWorkers")}
                 value={skill}
                 onChange={e => { setSkill(e.target.value); setPage(1); }}
                 className="flex-1 bg-transparent outline-none text-sm py-3 text-foreground placeholder:text-muted-foreground font-medium"
@@ -82,7 +84,7 @@ export default function SearchPage() {
               <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
               <input
                 type="text"
-                placeholder="City or area"
+                placeholder={t("filterCity")}
                 value={city}
                 onChange={e => { setCity(e.target.value); setPage(1); }}
                 className="flex-1 bg-transparent outline-none text-sm py-3 text-foreground placeholder:text-muted-foreground font-medium"
@@ -105,7 +107,7 @@ export default function SearchPage() {
               }`}
             >
               <SlidersHorizontal className="w-4 h-4" />
-              Filters
+              {t("showFilters")}
               {hasFilters && (
                 <span className="w-5 h-5 bg-primary text-primary-foreground rounded-full text-[10px] font-bold flex items-center justify-center">
                   {[skill, city, minRating, available].filter(Boolean).length}
@@ -129,9 +131,9 @@ export default function SearchPage() {
                       <SelectValue placeholder="Availability" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Any availability</SelectItem>
-                      <SelectItem value="true">Available now</SelectItem>
-                      <SelectItem value="false">Currently busy</SelectItem>
+                      <SelectItem value="all">{t("anyAvailability")}</SelectItem>
+                      <SelectItem value="true">{t("availableOnly")}</SelectItem>
+                      <SelectItem value="false">{t("busy")}</SelectItem>
                     </SelectContent>
                   </Select>
 
@@ -140,10 +142,10 @@ export default function SearchPage() {
                       <SelectValue placeholder="Min Rating" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Any rating</SelectItem>
-                      <SelectItem value="4">4+ stars</SelectItem>
-                      <SelectItem value="3">3+ stars</SelectItem>
-                      <SelectItem value="2">2+ stars</SelectItem>
+                      <SelectItem value="all">{t("allRatings")}</SelectItem>
+                      <SelectItem value="4">{t("rating4Plus")}</SelectItem>
+                      <SelectItem value="3">{t("rating3Plus")}</SelectItem>
+                      <SelectItem value="2">{t("rating2Plus")}</SelectItem>
                     </SelectContent>
                   </Select>
 
@@ -154,7 +156,7 @@ export default function SearchPage() {
                       onClick={clearFilters}
                       className="gap-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/5 rounded-xl"
                     >
-                      <X className="w-3.5 h-3.5" /> Clear all
+                      <X className="w-3.5 h-3.5" /> {t("clearFilters")}
                     </Button>
                   )}
                 </div>

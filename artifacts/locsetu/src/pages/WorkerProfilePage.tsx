@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { useGetWorker, useGetWorkerReviews, useListSavedWorkers } from "@workspace/api-client-react";
 import { useSaveWorker, useUnsaveWorker } from "@/lib/api-compat";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { getListSavedWorkersQueryKey } from "@workspace/api-client-react";
 import {
@@ -37,6 +38,7 @@ export default function WorkerProfilePage() {
   const qc = useQueryClient();
 
   const { data: worker, isLoading } = useGetWorker(workerId);
+  const { t } = useLanguage();
   const { data: reviews } = useGetWorkerReviews(workerId);
   const { data: savedWorkers } = useListSavedWorkers({ query: { enabled: !!user, queryKey: getListSavedWorkersQueryKey() } });
 
@@ -103,7 +105,7 @@ export default function WorkerProfilePage() {
                       {worker.isVerified && (
                         <div className="flex items-center gap-1 text-primary">
                           <CheckCircle className="w-5 h-5" />
-                          <span className="text-sm font-medium">Verified</span>
+                          <span className="text-sm font-medium">{t("workerVerified")}</span>
                         </div>
                       )}
                     </div>
@@ -114,7 +116,7 @@ export default function WorkerProfilePage() {
                   </div>
                   <Badge variant={worker.isAvailable ? "default" : "secondary"}
                     className={worker.isAvailable ? "bg-green-500 hover:bg-green-600" : ""}>
-                    {worker.isAvailable ? "Available Now" : "Currently Busy"}
+                    {worker.isAvailable ? t("available") : t("busy")}
                   </Badge>
                 </div>
 
@@ -122,11 +124,11 @@ export default function WorkerProfilePage() {
                   <div className="flex items-center gap-1.5">
                     <StarRating rating={worker.rating} />
                     <span className="font-semibold">{worker.rating.toFixed(1)}</span>
-                    <span className="text-muted-foreground text-sm">({worker.reviewCount} reviews)</span>
+                    <span className="text-muted-foreground text-sm">({worker.reviewCount} {t("reviews")})</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Briefcase className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">{worker.completedJobs} jobs done</span>
+                    <span className="text-sm text-muted-foreground">{worker.completedJobs} {t("jobsDone")}</span>
                   </div>
                 </div>
 
@@ -143,7 +145,7 @@ export default function WorkerProfilePage() {
             <div className="flex flex-col sm:flex-row gap-3">
               <Button className="flex-1" onClick={handleHire}>
                 <Plus className="w-4 h-4 mr-2" />
-                Hire Now
+                {t("hireNow")}
               </Button>
               {worker.phone && (
                 <Button variant="outline" asChild>
@@ -165,7 +167,7 @@ export default function WorkerProfilePage() {
                 className={isSaved ? "bg-red-500 hover:bg-red-600 text-white" : ""}
               >
                 <Heart className={`w-4 h-4 mr-2 ${isSaved ? "fill-current" : ""}`} />
-                {isSaved ? "Saved" : "Save"}
+                {isSaved ? t("unsaveWorker") : t("saveWorker")}
               </Button>
             </div>
           </CardContent>
@@ -176,7 +178,7 @@ export default function WorkerProfilePage() {
       {worker.bio && (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
           <Card>
-            <CardHeader><CardTitle className="text-base">About</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-base">{t("about")}</CardTitle></CardHeader>
             <CardContent>
               <p className="text-muted-foreground text-sm leading-relaxed">{worker.bio}</p>
             </CardContent>
@@ -187,13 +189,13 @@ export default function WorkerProfilePage() {
       {/* Details */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
         <Card>
-          <CardHeader><CardTitle className="text-base">Details</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">{t("experience")}</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             {worker.experience && (
               <div className="flex items-start gap-3">
                 <Calendar className="w-4 h-4 text-muted-foreground mt-0.5" />
                 <div>
-                  <div className="text-xs text-muted-foreground">Experience</div>
+                  <div className="text-xs text-muted-foreground">{t("experienceLabel")}</div>
                   <div className="text-sm">{worker.experience}</div>
                 </div>
               </div>
@@ -202,7 +204,7 @@ export default function WorkerProfilePage() {
               <div className="flex items-start gap-3">
                 <Languages className="w-4 h-4 text-muted-foreground mt-0.5" />
                 <div>
-                  <div className="text-xs text-muted-foreground">Languages</div>
+                  <div className="text-xs text-muted-foreground">{t("spokenLanguages")}</div>
                   <div className="text-sm">{worker.languages.join(", ")}</div>
                 </div>
               </div>
@@ -215,11 +217,11 @@ export default function WorkerProfilePage() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Reviews ({reviews?.length ?? 0})</CardTitle>
+            <CardTitle className="text-base">{t("reviewsSection")} ({reviews?.length ?? 0})</CardTitle>
           </CardHeader>
           <CardContent>
             {!reviews || reviews.length === 0 ? (
-              <p className="text-muted-foreground text-sm text-center py-6">No reviews yet. Be the first to review!</p>
+              <p className="text-muted-foreground text-sm text-center py-6">{t("noReviewsYet")}</p>
             ) : (
               <div className="space-y-4">
                 {reviews.map(review => (

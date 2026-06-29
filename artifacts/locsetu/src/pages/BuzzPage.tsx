@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useListBuzz, type BuzzPost } from "@workspace/api-client-react";
 import { getDeleteBuzzMutationOptions, getCreateBuzzMutationOptions } from "@/lib/api-compat";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -69,6 +70,7 @@ function BuzzCard({ post, onDelete, canDelete }: {
 
 export default function BuzzPage() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -89,10 +91,10 @@ export default function BuzzPage() {
       queryClient.invalidateQueries({ queryKey: ["/buzz"] });
       setDialogOpen(false);
       setContent("");
-      toast({ title: "Posted!", description: "Your buzz post is now live." });
+      toast({ title: t("postPosted"), description: t("postLive") });
     },
     onError: () => {
-      toast({ title: "Error", description: "Could not post. Please try again.", variant: "destructive" });
+      toast({ title: t("error"), description: t("postError"), variant: "destructive" });
     },
   });
 
@@ -100,14 +102,14 @@ export default function BuzzPage() {
     ...getDeleteBuzzMutationOptions(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/buzz"] });
-      toast({ title: "Deleted", description: "Post removed." });
+      toast({ title: t("delete"), description: t("postDeleted") });
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim()) {
-      toast({ title: "Missing content", description: "Please write something to share.", variant: "destructive" });
+      toast({ title: t("missingContent"), description: t("writeToShare"), variant: "destructive" });
       return;
     }
     createMutation.mutate({ data: { content } });
@@ -131,18 +133,16 @@ export default function BuzzPage() {
             <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
               <Megaphone className="w-5 h-5" />
             </div>
-            <h1 className="text-3xl font-bold">Local Buzz</h1>
+            <h1 className="text-3xl font-bold">{t("localBuzz")}</h1>
           </div>
-          <p className="text-white/80 text-sm max-w-lg">
-            Discover what's new in your area — share updates, news, and announcements with your community.
-          </p>
+          <p className="text-white/80 text-sm max-w-lg">{t("buzzPageDesc")}</p>
 
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
             <div className="flex-1 flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-xl px-4 border border-white/20">
               <Search className="w-4 h-4 text-white/70 flex-shrink-0" />
               <input
                 type="text"
-                placeholder="Search posts..."
+                placeholder={t("searchPosts")}
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="flex-1 bg-transparent outline-none text-sm py-3 text-white placeholder:text-white/60"
@@ -156,20 +156,20 @@ export default function BuzzPage() {
                 <DialogTrigger asChild>
                   <Button size="sm" className="bg-white text-primary hover:bg-white/90 font-semibold gap-2 px-5 rounded-xl h-auto py-3">
                     <Plus className="w-4 h-4" />
-                    Post
+                    {t("postBuzz")}
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-lg">
                   <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                       <Megaphone className="w-5 h-5 text-primary" />
-                      Share Something New
+                      {t("postSomethingNew")}
                     </DialogTitle>
                   </DialogHeader>
                   <form onSubmit={handleSubmit} className="space-y-4 mt-2">
                     <div>
                       <Textarea
-                        placeholder="What's happening in your area? Share news, events, deals..."
+                        placeholder={t("contentPlaceholder")}
                         value={content}
                         onChange={e => setContent(e.target.value)}
                         rows={5}
@@ -180,10 +180,10 @@ export default function BuzzPage() {
                     </div>
                     <div className="flex gap-2 pt-2">
                       <Button type="button" variant="outline" className="flex-1" onClick={() => setDialogOpen(false)}>
-                        Cancel
+                        {t("cancel")}
                       </Button>
                       <Button type="submit" className="flex-1" disabled={createMutation.isPending || !content.trim()}>
-                        {createMutation.isPending ? "Posting..." : "Post Buzz"}
+                        {createMutation.isPending ? t("posting") : t("postBuzz")}
                       </Button>
                     </div>
                   </form>
@@ -197,7 +197,7 @@ export default function BuzzPage() {
       <div className="max-w-5xl mx-auto px-4 py-8">
         {!isLoading && (
           <p className="text-sm text-muted-foreground mb-4">
-            <strong>{posts.length}</strong> {posts.length === 1 ? "post" : "posts"} {search ? "found" : "in your community"}
+            <strong>{posts.length}</strong> {posts.length === 1 ? t("postFound") : t("postsFound")} {search ? "" : t("postsInCommunity")}
           </p>
         )}
 
@@ -220,17 +220,17 @@ export default function BuzzPage() {
             <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Megaphone className="w-8 h-8 text-primary" />
             </div>
-            <h3 className="font-semibold text-foreground text-lg mb-1">No posts yet</h3>
+            <h3 className="font-semibold text-foreground text-lg mb-1">{t("noPostsYet")}</h3>
             <p className="text-muted-foreground text-sm">
               {search
-                ? "Try a different search term."
+                ? t("searchNoResults")
                 : user
-                ? "Be the first to share something in your community!"
-                : "Log in to share something new in your area!"}
+                ? t("noPostsYetDesc")
+                : t("noPostsLoginDesc")}
             </p>
             {user && !search && (
               <Button className="mt-4 gap-2" onClick={() => setDialogOpen(true)}>
-                <Plus className="w-4 h-4" /> Post Something
+                <Plus className="w-4 h-4" /> {t("postBuzz")}
               </Button>
             )}
           </motion.div>
@@ -256,13 +256,11 @@ export default function BuzzPage() {
             className="mt-10 bg-primary/5 border border-primary/20 rounded-2xl p-6 text-center"
           >
             <Megaphone className="w-8 h-8 text-primary mx-auto mb-2" />
-            <h3 className="font-semibold text-foreground mb-1">Have something to share?</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Log in or sign up to post about new shops, events, or deals in your area.
-            </p>
+            <h3 className="font-semibold text-foreground mb-1">{t("haveSomethingToShare")}</h3>
+            <p className="text-sm text-muted-foreground mb-4">{t("loginToPostBuzz")}</p>
             <div className="flex gap-2 justify-center">
-              <a href="/login"><Button variant="outline" size="sm">Log In</Button></a>
-              <a href="/register"><Button size="sm">Sign Up Free</Button></a>
+              <a href="/login"><Button variant="outline" size="sm">{t("logIn")}</Button></a>
+              <a href="/register"><Button size="sm">{t("signUpFree")}</Button></a>
             </div>
           </motion.div>
         )}

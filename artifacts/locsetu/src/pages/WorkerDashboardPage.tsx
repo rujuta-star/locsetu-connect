@@ -11,20 +11,22 @@ import { useAcceptJob, useRejectJob, useCompleteJob } from "@/lib/api-compat";
 import { getGetMyWorkerProfileQueryKey, getListJobsQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Star, Briefcase, CheckCircle, Clock, XCircle, User, TrendingUp } from "lucide-react";
-
-const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  open: { label: "Open", color: "bg-blue-100 text-blue-700" },
-  assigned: { label: "Assigned", color: "bg-yellow-100 text-yellow-700" },
-  in_progress: { label: "In Progress", color: "bg-orange-100 text-orange-700" },
-  completed: { label: "Completed", color: "bg-green-100 text-green-700" },
-  cancelled: { label: "Cancelled", color: "bg-red-100 text-red-700" },
-};
 
 export default function WorkerDashboardPage() {
   const { user } = useAuth();
   const [, navigate] = useLocation();
   const qc = useQueryClient();
+  const { t } = useLanguage();
+
+  const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
+    open: { label: t("status_open"), color: "bg-blue-100 text-blue-700" },
+    assigned: { label: t("status_assigned"), color: "bg-yellow-100 text-yellow-700" },
+    in_progress: { label: t("status_in_progress"), color: "bg-orange-100 text-orange-700" },
+    completed: { label: t("status_completed"), color: "bg-green-100 text-green-700" },
+    cancelled: { label: t("status_cancelled"), color: "bg-red-100 text-red-700" },
+  };
 
   const { data: profile, isLoading: profileLoading } = useGetMyWorkerProfile();
   const { data: jobs, isLoading: jobsLoading } = useListJobs();
@@ -57,12 +59,12 @@ export default function WorkerDashboardPage() {
     <div className="max-w-5xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Worker Dashboard</h1>
-          <p className="text-muted-foreground text-sm">Welcome, {user?.name?.split(" ")[0]}</p>
+          <h1 className="text-2xl font-bold">{t("workerDashboard")}</h1>
+          <p className="text-muted-foreground text-sm">{t("welcomeBack")}, {user?.name?.split(" ")[0]}</p>
         </div>
         <div className="flex items-center gap-3">
           <Label htmlFor="availability" className="text-sm text-muted-foreground">
-            {profile?.isAvailable ? "Available" : "Busy"}
+            {profile?.isAvailable ? t("available") : t("busy")}
           </Label>
           <Switch
             id="availability"
@@ -80,13 +82,13 @@ export default function WorkerDashboardPage() {
             <div className="flex items-center gap-3">
               <User className="w-5 h-5 text-orange-500" />
               <div>
-                <p className="font-medium text-sm text-orange-800">Complete your profile to get more jobs</p>
-                <p className="text-xs text-orange-600">Add skills, location, and a bio to appear in search results</p>
+                <p className="font-medium text-sm text-orange-800">{t("completeProfileTitle")}</p>
+                <p className="text-xs text-orange-600">{t("completeProfileDesc")}</p>
               </div>
             </div>
             <Button size="sm" variant="outline" onClick={() => navigate("/profile")}
               className="border-orange-300 text-orange-700 hover:bg-orange-100 flex-shrink-0">
-              Complete Profile
+              {t("goToProfile")}
             </Button>
           </CardContent>
         </Card>
@@ -95,10 +97,10 @@ export default function WorkerDashboardPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
         {[
-          { label: "Rating", value: profile?.rating.toFixed(1) ?? "-", icon: Star, color: "text-amber-500" },
-          { label: "Reviews", value: profile?.reviewCount ?? 0, icon: TrendingUp, color: "text-blue-600" },
-          { label: "Completed", value: profile?.completedJobs ?? 0, icon: CheckCircle, color: "text-green-600" },
-          { label: "Active Jobs", value: activeJobs.length, icon: Briefcase, color: "text-primary" },
+          { label: t("rating"), value: profile?.rating.toFixed(1) ?? "-", icon: Star, color: "text-amber-500" },
+          { label: t("reviews"), value: profile?.reviewCount ?? 0, icon: TrendingUp, color: "text-blue-600" },
+          { label: t("status_completed"), value: profile?.completedJobs ?? 0, icon: CheckCircle, color: "text-green-600" },
+          { label: t("activeJobsTab"), value: activeJobs.length, icon: Briefcase, color: "text-primary" },
         ].map((stat, i) => (
           <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
             <Card>
@@ -119,14 +121,14 @@ export default function WorkerDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Incoming requests */}
         <div className="space-y-4">
-          <h2 className="font-semibold text-lg">Incoming Requests</h2>
+          <h2 className="font-semibold text-lg">{t("newRequests")}</h2>
           {jobsLoading ? (
             <div className="space-y-3">{[1, 2].map(i => <Skeleton key={i} className="h-32 rounded-xl" />)}</div>
           ) : pendingJobs.length === 0 ? (
             <Card>
               <CardContent className="py-10 text-center">
                 <Clock className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">No pending job requests</p>
+                <p className="text-sm text-muted-foreground">{t("noNewRequests")}</p>
               </CardContent>
             </Card>
           ) : (
@@ -142,7 +144,7 @@ export default function WorkerDashboardPage() {
                             {job.skill} · {job.location}
                           </p>
                           <p className="text-xs text-muted-foreground mt-1">Customer #{job.customerId}</p>
-                          {job.budget && <p className="text-sm font-medium text-primary mt-1">Budget: ₹{job.budget}</p>}
+                          {job.budget && <p className="text-sm font-medium text-primary mt-1">{t("budgetLabel")}: ₹{job.budget}</p>}
                         </div>
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_CONFIG[job.status].color}`}>
                           {STATUS_CONFIG[job.status].label}
@@ -152,15 +154,15 @@ export default function WorkerDashboardPage() {
                         <Button size="sm" className="flex-1"
                           onClick={() => acceptJob.mutate(job.id)}
                           disabled={acceptJob.isPending}>
-                          <CheckCircle className="w-3.5 h-3.5 mr-1" /> Accept
+                          <CheckCircle className="w-3.5 h-3.5 mr-1" /> {t("acceptJob")}
                         </Button>
                         <Button size="sm" variant="outline" className="flex-1 text-destructive hover:text-destructive"
                           onClick={() => rejectJob.mutate(job.id)}
                           disabled={rejectJob.isPending}>
-                          <XCircle className="w-3.5 h-3.5 mr-1" /> Reject
+                          <XCircle className="w-3.5 h-3.5 mr-1" /> {t("rejectJob")}
                         </Button>
                         <Button size="sm" variant="ghost"
-                          onClick={() => navigate(`/jobs/${job.id}`)}>View</Button>
+                          onClick={() => navigate(`/jobs/${job.id}`)}>{ t("viewDetails")}</Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -172,12 +174,12 @@ export default function WorkerDashboardPage() {
 
         {/* Active jobs */}
         <div className="space-y-4">
-          <h2 className="font-semibold text-lg">Active Jobs</h2>
+          <h2 className="font-semibold text-lg">{t("activeJobsTab")}</h2>
           {activeJobs.length === 0 ? (
             <Card>
               <CardContent className="py-10 text-center">
                 <Briefcase className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">No active jobs</p>
+                <p className="text-sm text-muted-foreground">{t("noActiveJobs")}</p>
               </CardContent>
             </Card>
           ) : (
@@ -192,9 +194,9 @@ export default function WorkerDashboardPage() {
                       <Button size="sm" className="flex-1"
                         onClick={() => completeJob.mutate(job.id)}
                         disabled={completeJob.isPending}>
-                        <CheckCircle className="w-3.5 h-3.5 mr-1" /> Mark Complete
+                        <CheckCircle className="w-3.5 h-3.5 mr-1" /> {t("markComplete")}
                       </Button>
-                      <Button size="sm" variant="ghost" onClick={() => navigate(`/jobs/${job.id}`)}>Details</Button>
+                      <Button size="sm" variant="ghost" onClick={() => navigate(`/jobs/${job.id}`)}>{t("viewDetails")}</Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -204,7 +206,7 @@ export default function WorkerDashboardPage() {
 
           {completedJobs.length > 0 && (
             <>
-              <h2 className="font-semibold text-lg pt-2">Recent Completed</h2>
+              <h2 className="font-semibold text-lg pt-2">{t("recentCompleted")}</h2>
               <div className="space-y-2">
                 {completedJobs.slice(0, 3).map(job => (
                   <Card key={job.id} className="opacity-70 cursor-pointer hover:opacity-100"

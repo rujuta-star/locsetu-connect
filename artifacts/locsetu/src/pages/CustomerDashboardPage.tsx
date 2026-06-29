@@ -7,19 +7,21 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useListJobs, useListSavedWorkers } from "@workspace/api-client-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Plus, Search, Heart, Briefcase, Clock, CheckCircle, XCircle, Star } from "lucide-react";
-
-const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  open: { label: "Open", color: "bg-blue-100 text-blue-700", icon: <Clock className="w-3 h-3" /> },
-  assigned: { label: "Assigned", color: "bg-yellow-100 text-yellow-700", icon: <Briefcase className="w-3 h-3" /> },
-  in_progress: { label: "In Progress", color: "bg-orange-100 text-orange-700", icon: <Briefcase className="w-3 h-3" /> },
-  completed: { label: "Completed", color: "bg-green-100 text-green-700", icon: <CheckCircle className="w-3 h-3" /> },
-  cancelled: { label: "Cancelled", color: "bg-red-100 text-red-700", icon: <XCircle className="w-3 h-3" /> },
-};
 
 export default function CustomerDashboardPage() {
   const { user } = useAuth();
   const [, navigate] = useLocation();
+  const { t } = useLanguage();
+
+  const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
+    open: { label: t("status_open"), color: "bg-blue-100 text-blue-700", icon: <Clock className="w-3 h-3" /> },
+    assigned: { label: t("status_assigned"), color: "bg-yellow-100 text-yellow-700", icon: <Briefcase className="w-3 h-3" /> },
+    in_progress: { label: t("status_in_progress"), color: "bg-orange-100 text-orange-700", icon: <Briefcase className="w-3 h-3" /> },
+    completed: { label: t("status_completed"), color: "bg-green-100 text-green-700", icon: <CheckCircle className="w-3 h-3" /> },
+    cancelled: { label: t("status_cancelled"), color: "bg-red-100 text-red-700", icon: <XCircle className="w-3 h-3" /> },
+  };
 
   const { data: jobs, isLoading: jobsLoading } = useListJobs();
   const { data: savedWorkers } = useListSavedWorkers();
@@ -31,21 +33,21 @@ export default function CustomerDashboardPage() {
     <div className="max-w-5xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Welcome back, {user?.name?.split(" ")[0]}</h1>
-          <p className="text-muted-foreground text-sm">Manage your jobs and find workers</p>
+          <h1 className="text-2xl font-bold">{t("welcomeBack")}, {user?.name?.split(" ")[0]}</h1>
+          <p className="text-muted-foreground text-sm">{t("myJobs")}</p>
         </div>
         <Button onClick={() => navigate("/jobs/new")} className="gap-2">
-          <Plus className="w-4 h-4" /> Post a Job
+          <Plus className="w-4 h-4" /> {t("postNewJob")}
         </Button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
         {[
-          { label: "Total Jobs", value: jobs?.length ?? 0, icon: Briefcase, color: "text-blue-600" },
-          { label: "Active", value: activeJobs.length, icon: Clock, color: "text-orange-600" },
-          { label: "Completed", value: completedJobs.length, icon: CheckCircle, color: "text-green-600" },
-          { label: "Saved Workers", value: savedWorkers?.length ?? 0, icon: Heart, color: "text-red-500" },
+          { label: t("myJobs"), value: jobs?.length ?? 0, icon: Briefcase, color: "text-blue-600" },
+          { label: t("activeJobsList"), value: activeJobs.length, icon: Clock, color: "text-orange-600" },
+          { label: t("status_completed"), value: completedJobs.length, icon: CheckCircle, color: "text-green-600" },
+          { label: t("savedWorkers"), value: savedWorkers?.length ?? 0, icon: Heart, color: "text-red-500" },
         ].map((stat, i) => (
           <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
             <Card>
@@ -67,9 +69,9 @@ export default function CustomerDashboardPage() {
         {/* Active Jobs */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-lg">Active Jobs</h2>
+            <h2 className="font-semibold text-lg">{t("activeJobsList")}</h2>
             <Button variant="ghost" size="sm" onClick={() => navigate("/search")}>
-              <Search className="w-4 h-4 mr-1" /> Find Workers
+              <Search className="w-4 h-4 mr-1" /> {t("findWorkers")}
             </Button>
           </div>
 
@@ -81,8 +83,8 @@ export default function CustomerDashboardPage() {
             <Card>
               <CardContent className="py-12 text-center">
                 <Briefcase className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                <p className="text-muted-foreground mb-4">No active jobs yet</p>
-                <Button onClick={() => navigate("/jobs/new")}>Post Your First Job</Button>
+                <p className="text-muted-foreground mb-4">{t("noJobsPosted")}</p>
+                <Button onClick={() => navigate("/jobs/new")}>{t("postNewJob")}</Button>
               </CardContent>
             </Card>
           ) : (
@@ -103,7 +105,7 @@ export default function CustomerDashboardPage() {
                             </div>
                             <p className="text-sm text-muted-foreground mt-1 capitalize">{job.skill} · {job.location}</p>
                             {job.workerId && (
-                              <p className="text-sm text-primary mt-1">Worker assigned</p>
+                              <p className="text-sm text-primary mt-1">{t("workerAssigned")}</p>
                             )}
                           </div>
                           {job.budget && (
@@ -124,7 +126,7 @@ export default function CustomerDashboardPage() {
           {/* Recent completed */}
           {completedJobs.length > 0 && (
             <>
-              <h2 className="font-semibold text-lg pt-2">Recent Completed</h2>
+              <h2 className="font-semibold text-lg pt-2">{t("recentCompleted")}</h2>
               <div className="space-y-3">
                 {completedJobs.slice(0, 3).map(job => (
                   <Card key={job.id} className="opacity-75 hover:opacity-100 transition-opacity cursor-pointer"
@@ -148,16 +150,16 @@ export default function CustomerDashboardPage() {
         {/* Saved Workers */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-lg">Saved Workers</h2>
-            <Button variant="ghost" size="sm" onClick={() => navigate("/saved")}>View all</Button>
+            <h2 className="font-semibold text-lg">{t("savedWorkers")}</h2>
+            <Button variant="ghost" size="sm" onClick={() => navigate("/saved")}>{t("viewDetails")}</Button>
           </div>
 
           {!savedWorkers || savedWorkers.length === 0 ? (
             <Card>
               <CardContent className="py-8 text-center">
                 <Heart className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground mb-3">No saved workers</p>
-                <Button size="sm" variant="outline" onClick={() => navigate("/search")}>Browse Workers</Button>
+                <p className="text-sm text-muted-foreground mb-3">{t("noSavedWorkers")}</p>
+                <Button size="sm" variant="outline" onClick={() => navigate("/search")}>{t("browseWorkers")}</Button>
               </CardContent>
             </Card>
           ) : (

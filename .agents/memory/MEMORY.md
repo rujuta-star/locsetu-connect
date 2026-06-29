@@ -1,0 +1,3 @@
+- [LocSetu auth quirks](locsetu-auth.md) — email is required in Zod schema but auth route normalizes "" to null so phone-only signup works
+- [LocSetu translation system](locsetu-i18n.md) — 200+ key i18n covering EN/HI/MR; STATUS_CONFIG must be inside component to call t()
+- [LocSetu API compat layer](locsetu-api-compat.md) — job mutations take id:number directly; useSave/Unsave use direct mutationFn not spread

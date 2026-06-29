@@ -6,6 +6,7 @@ import { useListNotifications } from "@workspace/api-client-react";
 import { useMarkNotificationRead, useMarkAllNotificationsRead } from "@/lib/api-compat";
 import { getListNotificationsQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Bell, CheckCheck, Briefcase, Star, CheckCircle, AlertCircle, Info } from "lucide-react";
 
 const TYPE_ICONS: Record<string, React.ReactNode> = {
@@ -19,6 +20,7 @@ const TYPE_ICONS: Record<string, React.ReactNode> = {
 
 export default function NotificationsPage() {
   const qc = useQueryClient();
+  const { t } = useLanguage();
   const { data: notifications, isLoading } = useListNotifications();
   const markRead = useMarkNotificationRead({
     mutation: { onSuccess: () => qc.invalidateQueries({ queryKey: getListNotificationsQueryKey() }) }
@@ -34,17 +36,17 @@ export default function NotificationsPage() {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <Bell className="w-6 h-6 text-primary" />
-          <h1 className="text-2xl font-bold">Notifications</h1>
+          <h1 className="text-2xl font-bold">{t("notifications")}</h1>
           {unreadCount > 0 && (
             <span className="bg-primary text-primary-foreground text-xs font-medium px-2 py-0.5 rounded-full">
-              {unreadCount} new
+              {unreadCount} {t("newBadge")}
             </span>
           )}
         </div>
         {unreadCount > 0 && (
           <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground"
             onClick={() => markAllRead.mutate()} disabled={markAllRead.isPending}>
-            <CheckCheck className="w-4 h-4" /> Mark all read
+            <CheckCheck className="w-4 h-4" /> {t("markAllReadBtn")}
           </Button>
         )}
       </div>
@@ -56,8 +58,8 @@ export default function NotificationsPage() {
       ) : !notifications || notifications.length === 0 ? (
         <div className="text-center py-20">
           <Bell className="w-14 h-14 text-muted-foreground mx-auto mb-4" />
-          <h2 className="text-lg font-semibold mb-2">No notifications</h2>
-          <p className="text-sm text-muted-foreground">You're all caught up!</p>
+          <h2 className="text-lg font-semibold mb-2">{t("noNotifications")}</h2>
+          <p className="text-sm text-muted-foreground">{t("allCaughtUp")}</p>
         </div>
       ) : (
         <div className="space-y-2">
