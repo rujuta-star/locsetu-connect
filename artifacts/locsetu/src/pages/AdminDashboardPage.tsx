@@ -1,6 +1,6 @@
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,11 +8,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useGetTopWorkers } from "@workspace/api-client-react";
 import { useGetAdminStats, useListPendingVerifications, useVerifyWorker, getListPendingVerificationsQueryKey, getGetAdminStatsQueryKey } from "@/lib/api-compat";
 import { useQueryClient } from "@tanstack/react-query";
-import { Users, Briefcase, CheckCircle, TrendingUp, Shield, Star, AlertTriangle, UserCheck } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { Users, Briefcase, CheckCircle, TrendingUp, Shield, Star, UserCheck } from "lucide-react";
 
 export default function AdminDashboardPage() {
   const [, navigate] = useLocation();
   const qc = useQueryClient();
+  const { t } = useLanguage();
 
   const { data: stats, isLoading: statsLoading } = useGetAdminStats();
   const { data: topWorkers } = useGetTopWorkers();
@@ -28,30 +30,29 @@ export default function AdminDashboardPage() {
   });
 
   const STATS = stats ? [
-    { label: "Total Users", value: stats.totalUsers, icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
-    { label: "Workers", value: stats.totalWorkers, icon: UserCheck, color: "text-green-600", bg: "bg-green-50" },
-    { label: "Customers", value: stats.totalCustomers, icon: Users, color: "text-purple-600", bg: "bg-purple-50" },
-    { label: "Total Jobs", value: stats.totalJobs, icon: Briefcase, color: "text-orange-600", bg: "bg-orange-50" },
-    { label: "Completed", value: stats.completedJobs, icon: CheckCircle, color: "text-green-700", bg: "bg-green-50" },
-    { label: "Completion Rate", value: `${stats.completionRate}%`, icon: TrendingUp, color: "text-primary", bg: "bg-primary/10" },
-    { label: "Pending Verify", value: stats.pendingVerifications, icon: Shield, color: "text-amber-600", bg: "bg-amber-50" },
-    { label: "Active Jobs", value: stats.activeJobs, icon: Briefcase, color: "text-cyan-600", bg: "bg-cyan-50" },
+    { label: t("totalUsersLabel"), value: stats.totalUsers, icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
+    { label: t("workers"), value: stats.totalWorkers, icon: UserCheck, color: "text-green-600", bg: "bg-green-50" },
+    { label: t("customers"), value: stats.totalCustomers, icon: Users, color: "text-purple-600", bg: "bg-purple-50" },
+    { label: t("totalJobs"), value: stats.totalJobs, icon: Briefcase, color: "text-orange-600", bg: "bg-orange-50" },
+    { label: t("status_completed"), value: stats.completedJobs, icon: CheckCircle, color: "text-green-700", bg: "bg-green-50" },
+    { label: t("completionRate"), value: `${stats.completionRate}%`, icon: TrendingUp, color: "text-primary", bg: "bg-primary/10" },
+    { label: t("pendingVerify"), value: stats.pendingVerifications, icon: Shield, color: "text-amber-600", bg: "bg-amber-50" },
+    { label: t("activeJobsLabel"), value: stats.activeJobs, icon: Briefcase, color: "text-cyan-600", bg: "bg-cyan-50" },
   ] : [];
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-          <p className="text-muted-foreground text-sm">Platform overview and management</p>
+          <h1 className="text-2xl font-bold">{t("adminDashboard")}</h1>
+          <p className="text-muted-foreground text-sm">{t("platformOverview")}</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => navigate("/admin/users")}>Manage Users</Button>
-          <Button variant="outline" size="sm" onClick={() => navigate("/admin/workers")}>Verifications</Button>
+          <Button variant="outline" size="sm" onClick={() => navigate("/admin/users")}>{t("manageUsers")}</Button>
+          <Button variant="outline" size="sm" onClick={() => navigate("/admin/workers")}>{t("adminVerifications")}</Button>
         </div>
       </div>
 
-      {/* Stats grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
         {statsLoading ? (
           Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-xl" />)
@@ -77,17 +78,16 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Pending Verifications */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="font-semibold text-lg flex items-center gap-2">
               <Shield className="w-5 h-5 text-amber-500" />
-              Pending Verifications
+              {t("pendingVerifications")}
               {(pendingWorkers?.length ?? 0) > 0 && (
                 <Badge className="bg-amber-500 text-white">{pendingWorkers?.length}</Badge>
               )}
             </h2>
-            <Button variant="ghost" size="sm" onClick={() => navigate("/admin/workers")}>View all</Button>
+            <Button variant="ghost" size="sm" onClick={() => navigate("/admin/workers")}>{t("viewAll")}</Button>
           </div>
 
           {pendingLoading ? (
@@ -96,7 +96,7 @@ export default function AdminDashboardPage() {
             <Card>
               <CardContent className="py-10 text-center">
                 <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">All verifications processed</p>
+                <p className="text-sm text-muted-foreground">{t("allVerificationsProcessed")}</p>
               </CardContent>
             </Card>
           ) : (
@@ -118,12 +118,12 @@ export default function AdminDashboardPage() {
                       <Button size="sm" className="flex-1 bg-green-600 hover:bg-green-700"
                         onClick={() => verifyWorker.mutate({ workerId: worker.userId, status: "approved" })}
                         disabled={verifyWorker.isPending}>
-                        Approve
+                        {t("approve")}
                       </Button>
                       <Button size="sm" variant="outline" className="flex-1 text-destructive hover:text-destructive"
                         onClick={() => verifyWorker.mutate({ workerId: worker.userId, status: "rejected" })}
                         disabled={verifyWorker.isPending}>
-                        Reject
+                        {t("reject")}
                       </Button>
                     </div>
                   </CardContent>
@@ -133,10 +133,9 @@ export default function AdminDashboardPage() {
           )}
         </div>
 
-        {/* Top Workers */}
         <div className="space-y-4">
           <h2 className="font-semibold text-lg flex items-center gap-2">
-            <Star className="w-5 h-5 text-amber-500" /> Top-Rated Workers
+            <Star className="w-5 h-5 text-amber-500" /> {t("topRatedWorkers")}
           </h2>
           <div className="space-y-2">
             {topWorkers?.slice(0, 8).map((worker, i) => (

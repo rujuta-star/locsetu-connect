@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Star, MapPin, CheckCircle, Briefcase, Zap } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const AVATAR_GRADIENTS = [
   "from-orange-400 to-rose-500",
@@ -36,6 +37,7 @@ interface Worker {
 }
 
 export default function WorkerCard({ worker }: { worker: Worker }) {
+  const { t } = useLanguage();
   const initials = worker.name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
   const gradient = AVATAR_GRADIENTS[worker.id % AVATAR_GRADIENTS.length];
   const stars = Math.round(worker.rating);
@@ -46,11 +48,9 @@ export default function WorkerCard({ worker }: { worker: Worker }) {
       transition={{ duration: 0.2 }}
       className="group relative bg-card border border-border hover:border-primary/30 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden"
     >
-      {/* Subtle gradient bg on hover */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-3xl" />
 
       <div className="relative">
-        {/* Header: avatar + name + availability */}
         <div className="flex items-start gap-4">
           <div className="relative flex-shrink-0">
             <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-bold text-base shadow-md`}>
@@ -83,12 +83,11 @@ export default function WorkerCard({ worker }: { worker: Worker }) {
                 }`}
               >
                 {worker.isAvailable ? (
-                  <><Zap className="w-2.5 h-2.5 mr-1" />Available</>
-                ) : "Busy"}
+                  <><Zap className="w-2.5 h-2.5 mr-1" />{t("available")}</>
+                ) : t("busy")}
               </Badge>
             </div>
 
-            {/* Star rating */}
             <div className="flex items-center gap-1.5 mt-1">
               <div className="flex items-center gap-0.5">
                 {Array.from({ length: 5 }).map((_, i) => (
@@ -99,12 +98,11 @@ export default function WorkerCard({ worker }: { worker: Worker }) {
                 ))}
               </div>
               <span className="text-sm font-semibold text-foreground">{worker.rating.toFixed(1)}</span>
-              <span className="text-xs text-muted-foreground">({worker.reviewCount} reviews)</span>
+              <span className="text-xs text-muted-foreground">({worker.reviewCount} {t("reviews")})</span>
             </div>
           </div>
         </div>
 
-        {/* Skills */}
         <div className="flex flex-wrap gap-1.5 mt-3">
           {worker.skills.slice(0, 3).map(skill => (
             <span
@@ -116,12 +114,11 @@ export default function WorkerCard({ worker }: { worker: Worker }) {
           ))}
           {worker.skills.length > 3 && (
             <span className="text-xs text-muted-foreground border border-border rounded-lg px-2.5 py-0.5">
-              +{worker.skills.length - 3} more
+              +{worker.skills.length - 3} {t("more")}
             </span>
           )}
         </div>
 
-        {/* Meta row */}
         <div className="flex items-center gap-4 mt-3 pt-3 border-t border-border/60">
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
@@ -129,20 +126,19 @@ export default function WorkerCard({ worker }: { worker: Worker }) {
           </div>
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <Briefcase className="w-3.5 h-3.5" />
-            <span>{worker.completedJobs} jobs done</span>
+            <span>{worker.completedJobs} {t("jobsDone")}</span>
           </div>
           {worker.experience && (
             <div className="ml-auto text-xs font-medium text-primary">{worker.experience}</div>
           )}
         </div>
 
-        {/* Action */}
         <Link href={`/workers/${worker.id}`} className="block mt-3">
           <Button
             size="sm"
             className="w-full rounded-xl font-semibold bg-gradient-to-r from-primary to-orange-600 text-white hover:shadow-md transition-shadow"
           >
-            View Profile
+            {t("viewProfile")}
           </Button>
         </Link>
       </div>

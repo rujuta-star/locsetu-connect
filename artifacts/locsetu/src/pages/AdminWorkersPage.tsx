@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useListPendingVerifications, useVerifyWorker, getListPendingVerificationsQueryKey, getGetAdminStatsQueryKey } from "@/lib/api-compat";
 import { useQueryClient } from "@tanstack/react-query";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { Shield, CheckCircle, XCircle, MapPin, Briefcase } from "lucide-react";
 
 export default function AdminWorkersPage() {
   const qc = useQueryClient();
+  const { t } = useLanguage();
   const { data: workers, isLoading } = useListPendingVerifications();
 
   const verifyWorker = useVerifyWorker({
@@ -25,9 +27,9 @@ export default function AdminWorkersPage() {
     <div className="max-w-3xl mx-auto px-4 py-8">
       <div className="flex items-center gap-3 mb-6">
         <Shield className="w-6 h-6 text-amber-500" />
-        <h1 className="text-2xl font-bold">Worker Verifications</h1>
+        <h1 className="text-2xl font-bold">{t("workerVerifications")}</h1>
         {(workers?.length ?? 0) > 0 && (
-          <Badge className="bg-amber-500 text-white">{workers?.length} pending</Badge>
+          <Badge className="bg-amber-500 text-white">{workers?.length} {t("pending")}</Badge>
         )}
       </div>
 
@@ -36,8 +38,8 @@ export default function AdminWorkersPage() {
       ) : !workers || workers.length === 0 ? (
         <div className="text-center py-20">
           <CheckCircle className="w-14 h-14 text-green-500 mx-auto mb-4" />
-          <h2 className="text-lg font-semibold mb-2">All clear!</h2>
-          <p className="text-muted-foreground text-sm">No pending verification requests</p>
+          <h2 className="text-lg font-semibold mb-2">{t("allClear")}</h2>
+          <p className="text-muted-foreground text-sm">{t("noPendingVerifications")}</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -56,7 +58,7 @@ export default function AdminWorkersPage() {
                       <h3 className="font-semibold">{worker.name}</h3>
                       <div className="flex items-center gap-1 mt-0.5">
                         <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">{worker.location || "No location"}</span>
+                        <span className="text-sm text-muted-foreground">{worker.location || t("noLocation")}</span>
                       </div>
 
                       <div className="flex flex-wrap gap-1.5 mt-2">
@@ -68,7 +70,7 @@ export default function AdminWorkersPage() {
                       {worker.experience && (
                         <div className="flex items-center gap-1 mt-2">
                           <Briefcase className="w-3.5 h-3.5 text-muted-foreground" />
-                          <span className="text-xs text-muted-foreground">{worker.experience} experience</span>
+                          <span className="text-xs text-muted-foreground">{worker.experience} {t("experience")}</span>
                         </div>
                       )}
 
@@ -84,7 +86,7 @@ export default function AdminWorkersPage() {
                       onClick={() => verifyWorker.mutate({ workerId: worker.userId, status: "approved" })}
                       disabled={verifyWorker.isPending}
                     >
-                      <CheckCircle className="w-4 h-4 mr-2" /> Approve
+                      <CheckCircle className="w-4 h-4 mr-2" /> {t("approve")}
                     </Button>
                     <Button
                       variant="outline"
@@ -92,7 +94,7 @@ export default function AdminWorkersPage() {
                       onClick={() => verifyWorker.mutate({ workerId: worker.userId, status: "rejected" })}
                       disabled={verifyWorker.isPending}
                     >
-                      <XCircle className="w-4 h-4 mr-2" /> Reject
+                      <XCircle className="w-4 h-4 mr-2" /> {t("reject")}
                     </Button>
                   </div>
                 </CardContent>
