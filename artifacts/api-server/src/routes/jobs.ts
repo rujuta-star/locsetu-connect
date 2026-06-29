@@ -42,7 +42,6 @@ router.get("/jobs", authMiddleware, async (req, res): Promise<void> => {
   const userId = (req as any).user.userId;
   const role = (req as any).user.role;
   const status = typeof req.query.status === "string" ? req.query.status : undefined;
-  const queryRole = typeof req.query.role === "string" ? req.query.role : undefined;
 
   let allJobs: (typeof jobsTable.$inferSelect)[] = [];
   if (role === "worker") {
@@ -138,12 +137,23 @@ router.patch("/jobs/:id", authMiddleware, async (req, res): Promise<void> => {
 
 router.post("/jobs/:id/accept", authMiddleware, async (req, res): Promise<void> => {
   const userId = (req as any).user.userId;
+  const role = (req as any).user.role;
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(raw, 10);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
+  if (role !== "worker") { res.status(403).json({ error: "Only workers can accept jobs" }); return; }
+
+  const [workerProfile] = await db.select().from(workerProfilesTable)
+    .where(eq(workerProfilesTable.userId, userId)).limit(1);
+  if (!workerProfile) { res.status(403).json({ error: "Worker profile not found" }); return; }
+
   const [job] = await db.select().from(jobsTable).where(eq(jobsTable.id, id)).limit(1);
   if (!job) { res.status(404).json({ error: "Job not found" }); return; }
+
+  if (job.status !== "open" && !(job.status === "assigned" && job.workerId === userId)) {
+    res.status(409).json({ error: "Job is not available for acceptance" }); return;
+  }
 
   const [updated] = await db.update(jobsTable)
     .set({ status: "in_progress", workerId: userId })
@@ -154,12 +164,17 @@ router.post("/jobs/:id/accept", authMiddleware, async (req, res): Promise<void> 
 });
 
 router.post("/jobs/:id/reject", authMiddleware, async (req, res): Promise<void> => {
+  const userId = (req as any).user.userId;
+  const role = (req as any).user.role;
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(raw, 10);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
   const [job] = await db.select().from(jobsTable).where(eq(jobsTable.id, id)).limit(1);
   if (!job) { res.status(404).json({ error: "Job not found" }); return; }
+
+  if (role !== "worker" && role !== "admin") { res.status(403).json({ error: "Forbidden" }); return; }
+  if (role === "worker" && job.workerId !== userId) { res.status(403).json({ error: "Forbidden" }); return; }
 
   const [updated] = await db.update(jobsTable)
     .set({ status: "open", workerId: null })
@@ -169,12 +184,28 @@ router.post("/jobs/:id/reject", authMiddleware, async (req, res): Promise<void> 
 });
 
 router.post("/jobs/:id/complete", authMiddleware, async (req, res): Promise<void> => {
+  const userId = (req as any).user.userId;
+  const role = (req as any).user.role;
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(raw, 10);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
   const [job] = await db.select().from(jobsTable).where(eq(jobsTable.id, id)).limit(1);
   if (!job) { res.status(404).json({ error: "Job not found" }); return; }
+
+  const isAssignedWorker = role === "worker" && job.workerId === userId;
+  const isJobCustomer = role === "customer" && job.customerId === userId;
+  const isAdmin = role === "admin";
+
+  if (!isAssignedWorker && !isJobCustomer && !isAdmin) {
+    res.status(403).json({ error: "Only the assigned worker, job customer, or an admin can complete a job" });
+    return;
+  }
+
+  if (job.status === "completed" || job.status === "cancelled") {
+    res.status(409).json({ error: `Job is already ${job.status}` });
+    return;
+  }
 
   const [updated] = await db.update(jobsTable)
     .set({ status: "completed", completedAt: new Date() })
@@ -204,6 +235,11 @@ router.post("/jobs/:id/cancel", authMiddleware, async (req, res): Promise<void> 
   const [job] = await db.select().from(jobsTable).where(eq(jobsTable.id, id)).limit(1);
   if (!job) { res.status(404).json({ error: "Job not found" }); return; }
   if (job.customerId !== userId && (req as any).user.role !== "admin") { res.status(403).json({ error: "Forbidden" }); return; }
+
+  if (job.status === "completed" || job.status === "cancelled") {
+    res.status(409).json({ error: `Job is already ${job.status}` });
+    return;
+  }
 
   const [updated] = await db.update(jobsTable)
     .set({ status: "cancelled" })

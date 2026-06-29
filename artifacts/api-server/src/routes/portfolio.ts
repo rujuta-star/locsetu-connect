@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, portfolioItemsTable, workerProfilesTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { authMiddleware } from "../lib/auth";
 
 const router = Router();
@@ -18,21 +18,26 @@ router.post("/portfolio", authMiddleware, async (req, res): Promise<void> => {
   const userId = (req as any).user.userId;
   const { title, description, mediaUrl, mediaType, beforeUrl, afterUrl } = req.body;
 
-  if (!title || !mediaUrl) { res.status(400).json({ error: "title and mediaUrl required" }); return; }
+  if (!title || typeof title !== "string" || title.trim().length === 0) {
+    res.status(400).json({ error: "title is required" }); return;
+  }
+  if (!mediaUrl || typeof mediaUrl !== "string" || mediaUrl.trim().length === 0) {
+    res.status(400).json({ error: "mediaUrl is required" }); return;
+  }
 
   const [worker] = await db.select().from(workerProfilesTable)
     .where(eq(workerProfilesTable.userId, userId)).limit(1);
 
-  if (!worker) { res.status(404).json({ error: "Worker profile not found" }); return; }
+  if (!worker) { res.status(403).json({ error: "Only workers can add portfolio items" }); return; }
 
   const [item] = await db.insert(portfolioItemsTable).values({
     workerId: worker.id,
-    title,
-    description: description ?? null,
-    mediaUrl,
+    title: title.trim(),
+    description: description ? String(description).trim() : null,
+    mediaUrl: mediaUrl.trim(),
     mediaType: mediaType ?? "image",
-    beforeUrl: beforeUrl ?? null,
-    afterUrl: afterUrl ?? null,
+    beforeUrl: beforeUrl ? String(beforeUrl).trim() : null,
+    afterUrl: afterUrl ? String(afterUrl).trim() : null,
   }).returning();
 
   res.status(201).json(item);
@@ -47,10 +52,16 @@ router.delete("/portfolio/:id", authMiddleware, async (req, res): Promise<void> 
   const [worker] = await db.select().from(workerProfilesTable)
     .where(eq(workerProfilesTable.userId, userId)).limit(1);
 
-  if (!worker) { res.status(404).json({ error: "Worker profile not found" }); return; }
+  if (!worker) { res.status(403).json({ error: "Only workers can delete portfolio items" }); return; }
+
+  const [existing] = await db.select().from(portfolioItemsTable)
+    .where(and(eq(portfolioItemsTable.id, id), eq(portfolioItemsTable.workerId, worker.id)))
+    .limit(1);
+
+  if (!existing) { res.status(404).json({ error: "Portfolio item not found" }); return; }
 
   await db.delete(portfolioItemsTable)
-    .where(eq(portfolioItemsTable.id, id));
+    .where(and(eq(portfolioItemsTable.id, id), eq(portfolioItemsTable.workerId, worker.id)));
 
   res.json({ message: "Deleted" });
 });
