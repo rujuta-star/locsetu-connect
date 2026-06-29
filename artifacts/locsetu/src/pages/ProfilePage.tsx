@@ -75,8 +75,8 @@ export default function ProfilePage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">{t("profile")}</h1>
-        <p className="text-muted-foreground text-sm">Manage your account information</p>
+        <h1 className="text-2xl font-bold">{t("myProfile")}</h1>
+        <p className="text-muted-foreground text-sm">{t("manageAccount")}</p>
       </div>
 
       {/* App Language Preference */}
@@ -118,7 +118,7 @@ export default function ProfilePage() {
       {/* Basic info (display only) */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
         <Card>
-          <CardHeader><CardTitle className="text-base">Account Info</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">{t("accountInfo")}</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             <div>
               <Label className="text-xs text-muted-foreground">{t("fullName")}</Label>
@@ -151,7 +151,7 @@ export default function ProfilePage() {
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">Availability</CardTitle>
+                  <CardTitle className="text-base">{t("availabilityLabel")}</CardTitle>
                   <div className="flex items-center gap-2">
                     <span className={`text-sm font-medium ${isAvailable ? "text-green-600" : "text-muted-foreground"}`}>
                       {isAvailable ? t("available") : t("busy")}
@@ -165,7 +165,7 @@ export default function ProfilePage() {
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
             <Card>
-              <CardHeader><CardTitle className="text-base">Skills</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-base">{t("yourSkills")}</CardTitle></CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
                   {SKILL_OPTIONS.map(skill => (
@@ -189,10 +189,10 @@ export default function ProfilePage() {
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
             <Card>
-              <CardHeader><CardTitle className="text-base">Location & Details</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-base">{t("locationAndDetails")}</CardTitle></CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label>City</Label>
+                  <Label>{t("cityLocation")}</Label>
                   <div className="flex flex-wrap gap-2">
                     {LOCATIONS.map(loc => (
                       <button
@@ -209,15 +209,15 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="experience">Years of Experience</Label>
-                  <Input id="experience" placeholder="e.g. 5 years" value={experience} onChange={e => setExperience(e.target.value)} />
+                  <Label htmlFor="experience">{t("experienceLabel")}</Label>
+                  <Input id="experience" placeholder={t("yearsOfExperiencePlaceholder")} value={experience} onChange={e => setExperience(e.target.value)} />
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="about">About You</Label>
+                  <Label htmlFor="about">{t("aboutYou")}</Label>
                   <Textarea
                     id="about"
-                    placeholder="Tell customers about yourself, your expertise, and work style..."
+                    placeholder={t("bioPlaceholder")}
                     rows={3}
                     value={about}
                     onChange={e => setAbout(e.target.value)}
@@ -229,7 +229,7 @@ export default function ProfilePage() {
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
             <Card>
-              <CardHeader><CardTitle className="text-base">Spoken Languages</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-base">{t("spokenLanguagesLabel")}</CardTitle></CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
                   {SPOKEN_LANGUAGE_OPTIONS.map(lang => (
@@ -254,7 +254,7 @@ export default function ProfilePage() {
           {/* Verification status */}
           {profile && (
             <Card>
-              <CardHeader><CardTitle className="text-base">Verification Status</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-base">{t("verificationStatus")}</CardTitle></CardHeader>
               <CardContent>
                 {(() => {
                   const vs = (profile as any).verificationStatus;
@@ -266,10 +266,10 @@ export default function ProfilePage() {
                       : "bg-muted text-muted-foreground"
                     }`}>
                       <CheckCircle className="w-4 h-4" />
-                      {vs === "approved" ? "Your profile is verified"
-                      : vs === "pending" ? "Verification pending review"
-                      : vs === "rejected" ? "Verification rejected — contact support"
-                          : "Not submitted — upload ID proof to get verified"}
+                      {vs === "approved" ? t("profileVerifiedMsg")
+                      : vs === "pending" ? t("verificationPendingMsg")
+                      : vs === "rejected" ? t("verificationRejectedMsg")
+                          : t("notSubmittedMsg")}
                     </div>
                   );
                 })()}

@@ -35,13 +35,22 @@ export default function WorkerDashboardPage() {
     mutation: { onSuccess: () => qc.invalidateQueries({ queryKey: getGetMyWorkerProfileQueryKey() }) }
   });
   const acceptJob = useAcceptJob({
-    mutation: { onSuccess: () => qc.invalidateQueries({ queryKey: getListJobsQueryKey() }) }
+    mutation: {
+      onSuccess: () => qc.invalidateQueries({ queryKey: getListJobsQueryKey() }),
+      onError: () => alert(t("jobAcceptError")),
+    }
   });
   const rejectJob = useRejectJob({
-    mutation: { onSuccess: () => qc.invalidateQueries({ queryKey: getListJobsQueryKey() }) }
+    mutation: {
+      onSuccess: () => qc.invalidateQueries({ queryKey: getListJobsQueryKey() }),
+      onError: () => alert(t("jobRejectError")),
+    }
   });
   const completeJob = useCompleteJob({
-    mutation: { onSuccess: () => qc.invalidateQueries({ queryKey: getListJobsQueryKey() }) }
+    mutation: {
+      onSuccess: () => qc.invalidateQueries({ queryKey: getListJobsQueryKey() }),
+      onError: () => alert(t("jobCompleteError")),
+    }
   });
 
   const toggleAvailability = () => {
@@ -143,7 +152,7 @@ export default function WorkerDashboardPage() {
                           <p className="text-sm text-muted-foreground capitalize mt-0.5">
                             {job.skill} · {job.location}
                           </p>
-                          <p className="text-xs text-muted-foreground mt-1">Customer #{job.customerId}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{t("byCustomer")} #{job.customerId}</p>
                           {job.budget && <p className="text-sm font-medium text-primary mt-1">{t("budgetLabel")}: ₹{job.budget}</p>}
                         </div>
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_CONFIG[job.status].color}`}>
@@ -189,7 +198,7 @@ export default function WorkerDashboardPage() {
                   <CardContent className="p-4">
                     <h3 className="font-medium">{job.title}</h3>
                     <p className="text-sm text-muted-foreground capitalize mt-0.5">{job.skill} · {job.location}</p>
-                    <p className="text-xs text-muted-foreground mt-1">Customer #{job.customerId}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{t("byCustomer")} #{job.customerId}</p>
                     <div className="flex gap-2 mt-3">
                       <Button size="sm" className="flex-1"
                         onClick={() => completeJob.mutate(job.id)}

@@ -70,8 +70,8 @@ export default function WorkerProfilePage() {
   if (!worker) {
     return (
       <div className="text-center py-20">
-        <h2 className="text-xl font-semibold mb-2">Worker not found</h2>
-        <Button onClick={() => navigate("/search")}>Back to Search</Button>
+        <h2 className="text-xl font-semibold mb-2">{t("workerNotFound")}</h2>
+        <Button onClick={() => navigate("/search")}>{t("backToSearch")}</Button>
       </div>
     );
   }

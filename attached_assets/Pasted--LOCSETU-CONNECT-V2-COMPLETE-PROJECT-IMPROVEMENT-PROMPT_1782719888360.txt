@@ -1,0 +1,676 @@
+# LOCSETU CONNECT V2 - COMPLETE PROJECT IMPROVEMENT PROMPT
+
+You are an Expert Product Manager, UX/UI Designer, Full Stack Software Engineer, Software Architect, QA Engineer, Security Engineer, and Startup Consultant.
+
+I already have an existing project called **LocSetu Connect**. **Do NOT create a new project from scratch.**
+
+Your first responsibility is to completely analyze my existing project, understand the current architecture, UI, backend, database, workflows, and business logic.
+
+Then improve it into a production-ready application while preserving the existing structure as much as possible.
+
+The objective is to build a platform that genuinely helps local communities, creates employment opportunities, and provides the best experience for both workers and customers.
+
+---
+
+# STEP 1 : PROJECT ANALYSIS
+
+Before writing or modifying any code:
+
+• Analyze the entire project.
+• Identify broken features.
+• Identify UI inconsistencies.
+• Identify missing functionality.
+• Identify backend issues.
+• Identify security problems.
+• Identify scalability issues.
+• Generate a complete audit report.
+• Explain every issue before fixing it.
+
+After analysis, improve the existing project instead of replacing it.
+
+---
+
+# STEP 2 : FIX CRITICAL ISSUES
+
+## USER SIGNUP
+
+Currently users are unable to sign up successfully.
+
+Diagnose and fix every possible reason.
+
+Verify:
+
+• Authentication
+• OTP Flow
+• Email Authentication (if available)
+• Database Connection
+• Database Permissions
+• Firestore Rules
+• Validation
+• Session Handling
+• User Creation
+• Login
+• Logout
+
+Ensure signup works perfectly.
+
+Provide proper:
+
+• Success Messages
+• Error Messages
+• Validation
+
+No signup failures should remain.
+
+---
+
+## USER LOGIN
+
+Ensure login works correctly.
+
+Support:
+
+• Phone OTP
+• Email (if configured)
+
+Keep users logged in until logout.
+
+---
+
+# STEP 3 : LANGUAGE SUPPORT
+
+This platform is made for local people.
+
+Language switching must NOT only change headings.
+
+It must translate EVERYTHING.
+
+Translate:
+
+Buttons
+
+Menus
+
+Navbar
+
+Sidebar
+
+Footer
+
+Labels
+
+Placeholders
+
+Validation Messages
+
+Error Messages
+
+Success Messages
+
+Cards
+
+Notifications
+
+Search
+
+Filters
+
+Profile
+
+Dashboard
+
+Settings
+
+Admin Panel
+
+Worker Panel
+
+Customer Panel
+
+Job Forms
+
+Booking Pages
+
+Loading Messages
+
+Empty States
+
+Confirmation Dialogs
+
+Everything.
+
+Supported Languages:
+
+• English
+
+• Hindi
+
+• Marathi
+
+When user changes language:
+
+Entire application should instantly change.
+
+Save language preference permanently.
+
+---
+
+# STEP 4 : JOB POSTING
+
+Customers must successfully create jobs.
+
+Current flow:
+
+Choose Service
+
+Enter Job Title
+
+Description
+
+Budget
+
+Location
+
+Preferred Date
+
+Preferred Time
+
+Submit
+
+When Post Job is clicked:
+
+• Validate input
+• Save into database
+• Show confirmation
+• Display in Worker Dashboard
+• Notify nearby workers
+• Update job status
+
+Workers should:
+
+Accept Job
+
+Reject Job
+
+Complete Job
+
+Customers should:
+
+Track Job
+
+Cancel Job
+
+Hire Again
+
+Everything must work perfectly.
+
+---
+
+# STEP 5 : SMART MATCHING
+
+Automatically recommend workers using:
+
+• Skill Matching
+
+• Distance
+
+• Availability
+
+• Trust Score
+
+• Rating
+
+• Response Time
+
+• Completed Jobs
+
+Sort results intelligently.
+
+---
+
+# STEP 6 : TRUST SYSTEM
+
+Implement:
+
+Worker Verification
+
+Using:
+
+Aadhaar
+
+PAN
+
+Government ID
+
+Admin Approval
+
+Display:
+
+Verified Badge
+
+Verification Date
+
+Trust Score
+
+Calculate Trust Score using:
+
+Completed Jobs
+
+Verification
+
+Rating
+
+Response Time
+
+Cancellation Rate
+
+Profile Completion
+
+Account Age
+
+Display Trust Score throughout the application.
+
+---
+
+# STEP 7 : PRICE TRANSPARENCY
+
+Show estimated service price.
+
+Display:
+
+Minimum
+
+Average
+
+Maximum
+
+Example:
+
+Fan Repair
+
+₹150
+
+₹220
+
+₹300
+
+Reduce customer confusion.
+
+---
+
+# STEP 8 : EMERGENCY BOOKING
+
+Create Emergency Services.
+
+Emergency Categories:
+
+Electrician
+
+Plumber
+
+Mechanic
+
+Locksmith
+
+Immediately notify nearest available workers.
+
+Display:
+
+Distance
+
+ETA
+
+Availability
+
+---
+
+# STEP 9 : WORKER PROFILE
+
+Improve Worker Profile.
+
+Include:
+
+Photo
+
+Name
+
+Skills
+
+Experience
+
+Languages
+
+Location
+
+Trust Score
+
+Verified Badge
+
+Availability
+
+Completed Jobs
+
+Portfolio
+
+Certificates
+
+Customer Reviews
+
+Average Rating
+
+Gallery
+
+Videos
+
+About Me
+
+Call Button
+
+WhatsApp Button
+
+Hire Now
+
+Favourite
+
+Report Profile
+
+---
+
+# STEP 10 : REPEAT BOOKING
+
+Customers can:
+
+Hire Again
+
+Favourite Workers
+
+Recently Hired
+
+Booking History
+
+---
+
+# STEP 11 : WORKER DASHBOARD
+
+Display:
+
+Jobs Today
+
+Pending Jobs
+
+Completed Jobs
+
+Monthly Earnings
+
+Weekly Earnings
+
+Trust Score
+
+Rating
+
+Response Rate
+
+Acceptance Rate
+
+Growth Charts
+
+Performance Analytics
+
+---
+
+# STEP 12 : GOVERNMENT SCHEME ASSISTANT
+
+Recommend schemes using:
+
+Age
+
+Income
+
+Occupation
+
+Gender
+
+State
+
+Display:
+
+Eligibility
+
+Benefits
+
+Required Documents
+
+Application Process
+
+Official Website
+
+---
+
+# STEP 13 : COMMUNITY HELP CENTER
+
+Include:
+
+Hospitals
+
+Police
+
+Fire Station
+
+Blood Banks
+
+NGOs
+
+Government Offices
+
+Emergency Contacts
+
+Maps
+
+Location Search
+
+---
+
+# STEP 14 : LEARNING CENTER
+
+Workers can learn:
+
+Electrician
+
+Plumbing
+
+Tailoring
+
+Mechanic
+
+Digital Payments
+
+Customer Behaviour
+
+Soft Skills
+
+Business Skills
+
+Certificates
+
+Track Learning Progress.
+
+---
+
+# STEP 15 : VOICE FEATURES
+
+Implement:
+
+Voice Search
+
+Voice Registration
+
+Voice Job Posting
+
+Voice Navigation
+
+Support:
+
+English
+
+Hindi
+
+Marathi
+
+---
+
+# STEP 16 : SAFETY
+
+Implement:
+
+SOS Button
+
+Emergency Contact
+
+Report Worker
+
+Report Customer
+
+Complaint Center
+
+Block User
+
+Safety Guidelines
+
+---
+
+# STEP 17 : ADMIN PANEL
+
+Manage:
+
+Users
+
+Workers
+
+Customers
+
+Jobs
+
+Complaints
+
+Reports
+
+Reviews
+
+Verification Requests
+
+Government Schemes
+
+Community Resources
+
+Analytics Dashboard
+
+---
+
+# STEP 18 : USER EXPERIENCE
+
+Redesign every page for simplicity.
+
+Requirements:
+
+• Modern
+• Professional
+• Minimal
+• Mobile First
+• Responsive
+• Fast
+• Large Buttons
+• Icons
+• Easy Navigation
+• Accessibility
+• Friendly Animations
+• Dark Mode
+• Light Mode
+• Loading Indicators
+• Skeleton Screens
+• Helpful Error Messages
+
+The application should be usable even by first-time smartphone users.
+
+---
+
+# STEP 19 : PERFORMANCE
+
+Optimize:
+
+Security
+
+Authentication
+
+Database Queries
+
+API Calls
+
+Caching
+
+Loading Speed
+
+Responsive Design
+
+SEO
+
+Accessibility
+
+Offline Support
+
+Role-based Authorization
+
+---
+
+# STEP 20 : FUTURE READY ARCHITECTURE
+
+Design the project so future features can be added easily.
+
+Future Modules:
+
+AI Job Recommendation
+
+AI Chatbot
+
+Voice Assistant
+
+Digital Wallet
+
+Online Payments
+
+Insurance
+
+Micro Loans
+
+Marketplace
+
+Subscriptions
+
+Advertisements
+
+NGO Integration
+
+CSR Partnerships
+
+Government Integration
+
+---
+
+# FINAL GOAL
+
+Do NOT create placeholder pages.
+
+Every button should work.
+
+Every workflow should be complete.
+
+Every form should save data correctly.
+
+Every notification should work.
+
+Every language should translate correctly.
+
+Every dashboard should display live data.
+
+The project should feel like a production-ready startup platform that can realistically launch in India.
+
+Think beyond coding. Make product decisions that improve trust, usability, accessibility, scalability, and social impact while preserving the existing project structure wherever possible.

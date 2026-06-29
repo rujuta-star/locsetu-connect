@@ -110,16 +110,19 @@ router.get("/jobs/:id", authMiddleware, async (req, res): Promise<void> => {
 
 router.patch("/jobs/:id", authMiddleware, async (req, res): Promise<void> => {
   const userId = (req as any).user.userId;
+  const role = (req as any).user.role;
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(raw, 10);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+
+  if (role === "worker") { res.status(403).json({ error: "Workers cannot edit job details" }); return; }
 
   const parsed = UpdateJobBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
 
   const [existing] = await db.select().from(jobsTable).where(eq(jobsTable.id, id)).limit(1);
   if (!existing) { res.status(404).json({ error: "Job not found" }); return; }
-  if (existing.customerId !== userId) { res.status(403).json({ error: "Forbidden" }); return; }
+  if (existing.customerId !== userId && role !== "admin") { res.status(403).json({ error: "Forbidden" }); return; }
 
   const updateData: any = {};
   if (parsed.data.title) updateData.title = parsed.data.title;

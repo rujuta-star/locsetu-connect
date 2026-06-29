@@ -38,7 +38,7 @@ async function buildWorkerResponse(worker: any, user: any) {
     verificationStatus: worker.verificationStatus,
     completedJobs: worker.completedJobs,
     experience: worker.experience,
-    about: worker.about,
+    bio: worker.about,
     languages: worker.languages,
     idProofUrl: worker.idProofUrl,
     phone: user.phone,
@@ -81,6 +81,7 @@ router.get("/workers/recommendations", async (req, res): Promise<void> => {
     isVerified: r.worker_profiles.isVerified,
     completedJobs: r.worker_profiles.completedJobs,
     experience: r.worker_profiles.experience,
+    bio: r.worker_profiles.about,
     languages: r.worker_profiles.languages,
   }));
 
@@ -115,7 +116,7 @@ router.put("/workers/me", authMiddleware, async (req, res): Promise<void> => {
   if (parsed.data.location !== undefined) updateData.location = parsed.data.location;
   if (parsed.data.isAvailable !== undefined) updateData.isAvailable = parsed.data.isAvailable;
   if (parsed.data.experience !== undefined) updateData.experience = parsed.data.experience;
-  if (parsed.data.about !== undefined) updateData.about = parsed.data.about;
+  if ((parsed.data as any).bio !== undefined) updateData.about = (parsed.data as any).bio;
   if (parsed.data.languages !== undefined) updateData.languages = parsed.data.languages;
   if (parsed.data.idProofUrl !== undefined) {
     updateData.idProofUrl = parsed.data.idProofUrl;
@@ -164,6 +165,7 @@ router.get("/workers", async (req, res): Promise<void> => {
     isVerified: r.worker_profiles.isVerified,
     completedJobs: r.worker_profiles.completedJobs,
     experience: r.worker_profiles.experience,
+    bio: r.worker_profiles.about,
     languages: r.worker_profiles.languages,
   }));
 
@@ -190,6 +192,7 @@ router.get("/workers/top", async (_req, res): Promise<void> => {
     isVerified: r.worker_profiles.isVerified,
     completedJobs: r.worker_profiles.completedJobs,
     experience: r.worker_profiles.experience,
+    bio: r.worker_profiles.about,
     languages: r.worker_profiles.languages,
   }));
 

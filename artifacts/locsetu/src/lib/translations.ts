@@ -276,6 +276,15 @@ export const translations = {
     notSubmittedMsg: "Not submitted — upload ID proof to get verified",
     accountSettings: "Account Settings",
     preferredLanguage: "Preferred Language",
+    accountInfo: "Account Info",
+    locationAndDetails: "Location & Details",
+    aboutYou: "About You",
+    yearsOfExperiencePlaceholder: "e.g. 5 years",
+    workerNotFound: "Worker not found",
+    backToSearch: "Back to Search",
+    jobAcceptError: "Failed to accept job. Please try again.",
+    jobRejectError: "Failed to reject job. Please try again.",
+    jobCompleteError: "Failed to mark job complete. Please try again.",
 
     /* ── Buzz Page ── */
     buzzPageDesc: "Discover what's new in your area — share updates, news, and announcements.",
@@ -599,6 +608,15 @@ export const translations = {
     notSubmittedMsg: "सबमिट नहीं — सत्यापन के लिए ID प्रमाण अपलोड करें",
     accountSettings: "खाता सेटिंग",
     preferredLanguage: "पसंदीदा भाषा",
+    accountInfo: "खाता जानकारी",
+    locationAndDetails: "स्थान और विवरण",
+    aboutYou: "आपके बारे में",
+    yearsOfExperiencePlaceholder: "जैसे: 5 साल",
+    workerNotFound: "कारीगर नहीं मिला",
+    backToSearch: "खोज पर वापस",
+    jobAcceptError: "काम स्वीकार करने में विफल। दोबारा प्रयास करें।",
+    jobRejectError: "काम अस्वीकार करने में विफल। दोबारा प्रयास करें।",
+    jobCompleteError: "काम पूर्ण करने में विफल। दोबारा प्रयास करें।",
 
     /* ── Buzz Page ── */
     buzzPageDesc: "अपने क्षेत्र में नया क्या है जानें — अपडेट, समाचार और घोषणाएं साझा करें।",
@@ -922,6 +940,15 @@ export const translations = {
     notSubmittedMsg: "सबमिट केले नाही — सत्यापनासाठी ID पुरावा अपलोड करा",
     accountSettings: "खाते सेटिंग",
     preferredLanguage: "पसंतीची भाषा",
+    accountInfo: "खाते माहिती",
+    locationAndDetails: "स्थान आणि तपशील",
+    aboutYou: "तुमच्याबद्दल",
+    yearsOfExperiencePlaceholder: "उदा: 5 वर्षे",
+    workerNotFound: "कामगार सापडला नाही",
+    backToSearch: "शोधाकडे परत",
+    jobAcceptError: "काम स्वीकारणे अयशस्वी. पुन्हा प्रयत्न करा.",
+    jobRejectError: "काम नाकारणे अयशस्वी. पुन्हा प्रयत्न करा.",
+    jobCompleteError: "काम पूर्ण करणे अयशस्वी. पुन्हा प्रयत्न करा.",
 
     /* ── Buzz Page ── */
     buzzPageDesc: "तुमच्या क्षेत्रात नवीन काय आहे जाणा — अपडेट, बातम्या आणि घोषणा शेअर करा.",
