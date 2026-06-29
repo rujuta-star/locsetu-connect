@@ -20,6 +20,8 @@ export const workerProfilesTable = pgTable("worker_profiles", {
   rating: real("rating").notNull().default(0),
   reviewCount: integer("review_count").notNull().default(0),
   completedJobs: integer("completed_jobs").notNull().default(0),
+  trustScore: real("trust_score").notNull().default(0),
+  cancellationRate: real("cancellation_rate").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });

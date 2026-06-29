@@ -11,10 +11,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useCreateJob, useListSkills, getListJobsQueryKey } from "@workspace/api-client-react";
+import { useCreateJob, useListSkills, useGetWorker, getListJobsQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { AlertCircle, Briefcase } from "lucide-react";
+import TrustBadge from "@/components/TrustBadge";
 
 const schema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -35,9 +36,14 @@ export default function PostJobPage() {
   const qc = useQueryClient();
   const { t } = useLanguage();
   const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
-  const preselectedWorkerId = params.get("workerId");
+  const preselectedWorkerProfileId = params.get("workerId");
+  const preselectedProfileIdNum = preselectedWorkerProfileId ? parseInt(preselectedWorkerProfileId, 10) : 0;
 
   const { data: skills } = useListSkills();
+  const { data: preselectedWorker } = useGetWorker(preselectedProfileIdNum, {
+    query: { enabled: !!preselectedWorkerProfileId && !isNaN(preselectedProfileIdNum) }
+  });
+
   const createJob = useCreateJob({
     mutation: {
       onSuccess: (job) => {
@@ -64,7 +70,7 @@ export default function PostJobPage() {
         description: data.description,
         skill: data.skill,
         location: data.location,
-        workerId: preselectedWorkerId ? parseInt(preselectedWorkerId, 10) : undefined,
+        workerId: preselectedWorker ? preselectedWorker.userId : undefined,
         budget: data.budget ? parseFloat(data.budget) : undefined,
       }
     });
@@ -158,10 +164,20 @@ export default function PostJobPage() {
                 <Input id="scheduledAt" type="datetime-local" {...register("scheduledAt")} />
               </div>
 
-              {preselectedWorkerId && (
-                <Alert>
-                  <AlertDescription>{t("workerPreselectedNotice")}</AlertDescription>
-                </Alert>
+              {preselectedWorker && (
+                <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 space-y-2">
+                  <p className="text-sm font-medium text-primary">{t("workerPreselectedNotice")}</p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-400 to-rose-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                      {preselectedWorker.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm truncate">{preselectedWorker.name}</p>
+                      <p className="text-xs text-muted-foreground capitalize">{preselectedWorker.skills.slice(0, 2).join(", ")}</p>
+                    </div>
+                    <TrustBadge score={(preselectedWorker as any).trustScore ?? 0} size="sm" showScore showLabel />
+                  </div>
+                </div>
               )}
 
               <div className="flex gap-3 pt-2">

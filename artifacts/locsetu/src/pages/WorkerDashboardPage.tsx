@@ -12,7 +12,8 @@ import { getGetMyWorkerProfileQueryKey, getListJobsQueryKey } from "@workspace/a
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Star, Briefcase, CheckCircle, Clock, XCircle, User, TrendingUp } from "lucide-react";
+import { Star, Briefcase, CheckCircle, Clock, XCircle, User, TrendingUp, Shield } from "lucide-react";
+import TrustBadge, { TrustMeter } from "@/components/TrustBadge";
 
 export default function WorkerDashboardPage() {
   const { user } = useAuth();
@@ -104,7 +105,7 @@ export default function WorkerDashboardPage() {
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
         {[
           { label: t("rating"), value: profile?.rating.toFixed(1) ?? "-", icon: Star, color: "text-amber-500" },
           { label: t("reviews"), value: profile?.reviewCount ?? 0, icon: TrendingUp, color: "text-blue-600" },
@@ -126,6 +127,31 @@ export default function WorkerDashboardPage() {
           </motion.div>
         ))}
       </div>
+
+      {/* Trust Score banner */}
+      {profile && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-8">
+          <Card className="overflow-hidden">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-4">
+                <div className="flex-shrink-0">
+                  <Shield className="w-8 h-8 text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-3 mb-1">
+                    <div>
+                      <p className="font-semibold text-sm">{t("workerTrustTitle")}</p>
+                      <p className="text-xs text-muted-foreground">{t("workerTrustDesc")}</p>
+                    </div>
+                    <TrustBadge score={(profile as any).trustScore ?? 0} size="md" showScore showLabel />
+                  </div>
+                  <TrustMeter score={(profile as any).trustScore ?? 0} />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Incoming requests */}

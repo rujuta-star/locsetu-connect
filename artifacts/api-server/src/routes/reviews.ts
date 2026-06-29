@@ -3,6 +3,7 @@ import { db, reviewsTable, usersTable, workerProfilesTable } from "@workspace/db
 import { eq, avg, count, desc } from "drizzle-orm";
 import { authMiddleware } from "../lib/auth";
 import { CreateReviewBody, GetWorkerReviewsParams } from "@workspace/api-zod";
+import { recalculateTrustScore } from "../lib/trust";
 
 const router = Router();
 
@@ -39,6 +40,7 @@ router.post("/reviews", authMiddleware, async (req, res): Promise<void> => {
     await db.update(workerProfilesTable)
       .set({ rating: Math.round(newRating * 10) / 10, reviewCount: newCount })
       .where(eq(workerProfilesTable.userId, workerId));
+    await recalculateTrustScore(workerId);
   }
 
   const [customer] = await db.select().from(usersTable).where(eq(usersTable.id, customerId)).limit(1);

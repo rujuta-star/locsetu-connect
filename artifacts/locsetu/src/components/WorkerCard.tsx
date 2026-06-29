@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Star, MapPin, CheckCircle, Briefcase, Zap } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import TrustBadge, { TrustMeter } from "./TrustBadge";
 
 const AVATAR_GRADIENTS = [
   "from-orange-400 to-rose-500",
@@ -28,6 +29,8 @@ interface Worker {
   isAvailable: boolean;
   isVerified: boolean;
   completedJobs: number;
+  trustScore?: number;
+  cancellationRate?: number;
   experience?: string | null;
   languages: string[];
   bio?: string | null;
@@ -41,6 +44,7 @@ export default function WorkerCard({ worker }: { worker: Worker }) {
   const initials = worker.name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
   const gradient = AVATAR_GRADIENTS[worker.id % AVATAR_GRADIENTS.length];
   const stars = Math.round(worker.rating);
+  const score = worker.trustScore ?? 0;
 
   return (
     <motion.div
@@ -101,6 +105,15 @@ export default function WorkerCard({ worker }: { worker: Worker }) {
               <span className="text-xs text-muted-foreground">({worker.reviewCount} {t("reviews")})</span>
             </div>
           </div>
+        </div>
+
+        {/* Trust score row */}
+        <div className="flex items-center gap-2 mt-3">
+          <TrustBadge score={score} size="sm" showScore showLabel={false} />
+          <div className="flex-1">
+            <TrustMeter score={score} />
+          </div>
+          <span className="text-[10px] text-muted-foreground font-medium">{score}/100</span>
         </div>
 
         <div className="flex flex-wrap gap-1.5 mt-3">

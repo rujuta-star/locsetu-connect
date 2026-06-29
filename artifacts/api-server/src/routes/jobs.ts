@@ -3,6 +3,7 @@ import { db, jobsTable, usersTable, workerProfilesTable, notificationsTable } fr
 import { eq, and, desc } from "drizzle-orm";
 import { authMiddleware } from "../lib/auth";
 import { CreateJobBody, GetJobParams, UpdateJobParams, UpdateJobBody } from "@workspace/api-zod";
+import { recalculateTrustScore } from "../lib/trust";
 
 const router = Router();
 
@@ -185,6 +186,7 @@ router.post("/jobs/:id/complete", authMiddleware, async (req, res): Promise<void
     await db.update(workerProfilesTable)
       .set({ completedJobs: completedCount.length })
       .where(eq(workerProfilesTable.userId, job.workerId));
+    await recalculateTrustScore(job.workerId);
 
     await createNotification(job.workerId, "Job Completed", `Job "${job.title}" has been marked as completed`, "job_completed");
     await createNotification(job.customerId, "Job Completed", `Your job "${job.title}" is complete. Please leave a review!`, "job_completed");
@@ -208,6 +210,7 @@ router.post("/jobs/:id/cancel", authMiddleware, async (req, res): Promise<void> 
     .where(eq(jobsTable.id, id)).returning();
 
   if (job.workerId) {
+    await recalculateTrustScore(job.workerId);
     await createNotification(job.workerId, "Job Cancelled", `Job "${job.title}" has been cancelled`, "job_cancelled");
   }
 

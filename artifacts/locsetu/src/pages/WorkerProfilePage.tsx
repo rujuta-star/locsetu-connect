@@ -16,6 +16,8 @@ import {
   Star, MapPin, CheckCircle, Briefcase, Phone, MessageSquare,
   Heart, Plus, Calendar, Languages
 } from "lucide-react";
+import TrustBadge from "@/components/TrustBadge";
+import TrustScoreCard from "@/components/TrustScoreCard";
 
 function StarRating({ rating }: { rating: number }) {
   return (
@@ -54,7 +56,7 @@ export default function WorkerProfilePage() {
 
   const handleHire = () => {
     if (!user) { navigate("/login"); return; }
-    navigate(`/jobs/new?workerId=${worker?.userId}`);
+    navigate(`/jobs/new?workerId=${worker?.id}`);
   };
 
   if (isLoading) {
@@ -108,6 +110,7 @@ export default function WorkerProfilePage() {
                           <span className="text-sm font-medium">{t("workerVerified")}</span>
                         </div>
                       )}
+                      <TrustBadge score={(worker as any).trustScore ?? 0} size="md" showScore showLabel />
                     </div>
                     <div className="flex items-center gap-1 mt-1">
                       <MapPin className="w-4 h-4 text-muted-foreground" />
@@ -173,6 +176,23 @@ export default function WorkerProfilePage() {
           </CardContent>
         </Card>
       </motion.div>
+
+      {/* Trust Score */}
+      <TrustScoreCard
+        score={(worker as any).trustScore ?? 0}
+        rating={worker.rating}
+        completedJobs={worker.completedJobs}
+        verificationStatus={(worker as any).verificationStatus ?? "none"}
+        cancellationRate={(worker as any).cancellationRate ?? 0}
+        profileCompletion={[
+          worker.skills.length > 0,
+          !!worker.location,
+          !!worker.bio,
+          !!worker.experience,
+          worker.languages.length > 0,
+          !!(worker as any).idProofUrl,
+        ].filter(Boolean).length / 6}
+      />
 
       {/* About */}
       {worker.bio && (

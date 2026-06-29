@@ -7,6 +7,7 @@ import {
   GetWorkerParams,
   UpdateWorkerProfileBody,
 } from "@workspace/api-zod";
+import { recalculateTrustScore } from "../lib/trust";
 
 const router = Router();
 
@@ -37,6 +38,8 @@ async function buildWorkerResponse(worker: any, user: any) {
     isVerified: worker.isVerified,
     verificationStatus: worker.verificationStatus,
     completedJobs: worker.completedJobs,
+    trustScore: worker.trustScore ?? 0,
+    cancellationRate: worker.cancellationRate ?? 0,
     experience: worker.experience,
     bio: worker.about,
     languages: worker.languages,
@@ -80,6 +83,8 @@ router.get("/workers/recommendations", async (req, res): Promise<void> => {
     isAvailable: r.worker_profiles.isAvailable,
     isVerified: r.worker_profiles.isVerified,
     completedJobs: r.worker_profiles.completedJobs,
+    trustScore: r.worker_profiles.trustScore ?? 0,
+    cancellationRate: r.worker_profiles.cancellationRate ?? 0,
     experience: r.worker_profiles.experience,
     bio: r.worker_profiles.about,
     languages: r.worker_profiles.languages,
@@ -133,8 +138,12 @@ router.put("/workers/me", authMiddleware, async (req, res): Promise<void> => {
     return;
   }
 
+  await recalculateTrustScore(userId);
+
+  const [updatedWorker] = await db.select().from(workerProfilesTable)
+    .where(eq(workerProfilesTable.userId, userId)).limit(1);
   const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId)).limit(1);
-  res.json(await buildWorkerResponse(worker, user));
+  res.json(await buildWorkerResponse(updatedWorker, user));
 });
 
 router.get("/workers", async (req, res): Promise<void> => {
@@ -164,6 +173,8 @@ router.get("/workers", async (req, res): Promise<void> => {
     isAvailable: r.worker_profiles.isAvailable,
     isVerified: r.worker_profiles.isVerified,
     completedJobs: r.worker_profiles.completedJobs,
+    trustScore: r.worker_profiles.trustScore ?? 0,
+    cancellationRate: r.worker_profiles.cancellationRate ?? 0,
     experience: r.worker_profiles.experience,
     bio: r.worker_profiles.about,
     languages: r.worker_profiles.languages,
@@ -191,6 +202,8 @@ router.get("/workers/top", async (_req, res): Promise<void> => {
     isAvailable: r.worker_profiles.isAvailable,
     isVerified: r.worker_profiles.isVerified,
     completedJobs: r.worker_profiles.completedJobs,
+    trustScore: r.worker_profiles.trustScore ?? 0,
+    cancellationRate: r.worker_profiles.cancellationRate ?? 0,
     experience: r.worker_profiles.experience,
     bio: r.worker_profiles.about,
     languages: r.worker_profiles.languages,
