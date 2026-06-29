@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { IndianRupee, Zap, Droplets, Hammer, Paintbrush, Wrench, Scissors, Home, Car, BookOpen, Search } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const SKILLS = [
   { id: "all", name: "All", icon: IndianRupee },
@@ -53,6 +54,7 @@ const PRICING_DATA = [
 export default function PricingPage() {
   const [activeSkill, setActiveSkill] = useState("all");
   const [search, setSearch] = useState("");
+  const { t } = useLanguage();
 
   const filtered = PRICING_DATA.filter(p => {
     if (activeSkill !== "all" && p.skill !== activeSkill) return false;
@@ -65,9 +67,8 @@ export default function PricingPage() {
       <div className="bg-gradient-to-br from-emerald-600 to-teal-700 text-white py-10 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <IndianRupee className="w-10 h-10 mx-auto mb-3 opacity-90" />
-          <h1 className="text-3xl font-black mb-2">Price Transparency</h1>
-          <p className="text-emerald-100">Know the fair price before booking any service</p>
-          <p className="text-emerald-100 text-sm mt-1">बुकिंग से पहले सही कीमत जानें</p>
+          <h1 className="text-3xl font-black mb-2">{t("priceTransparency")}</h1>
+          <p className="text-emerald-100">{t("priceTransparencyDesc")}</p>
         </div>
       </div>
 
@@ -77,7 +78,7 @@ export default function PricingPage() {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search service..."
+            placeholder={t("searchServicePlaceholder")}
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full pl-11 pr-4 py-3 border-2 border-border rounded-xl focus:outline-none focus:border-primary bg-background"
@@ -126,21 +127,21 @@ export default function PricingPage() {
 
                 <div className="grid grid-cols-3 gap-2">
                   <div className="text-center bg-green-50 border border-green-200 rounded-xl py-3">
-                    <div className="text-xs text-muted-foreground mb-1">Min</div>
+                    <div className="text-xs text-muted-foreground mb-1">{t("priceMin")}</div>
                     <div className="font-black text-green-700">₹{item.minPrice.toLocaleString()}</div>
                   </div>
                   <div className="text-center bg-primary/8 border border-primary/20 rounded-xl py-3">
-                    <div className="text-xs text-muted-foreground mb-1">Avg</div>
+                    <div className="text-xs text-muted-foreground mb-1">{t("priceAvg")}</div>
                     <div className="font-black text-primary">₹{item.avgPrice.toLocaleString()}</div>
                   </div>
                   <div className="text-center bg-amber-50 border border-amber-200 rounded-xl py-3">
-                    <div className="text-xs text-muted-foreground mb-1">Max</div>
+                    <div className="text-xs text-muted-foreground mb-1">{t("priceMax")}</div>
                     <div className="font-black text-amber-700">₹{item.maxPrice.toLocaleString()}</div>
                   </div>
                 </div>
 
                 <p className="text-xs text-muted-foreground text-center mt-3">
-                  Prices are estimates · {item.unit}
+                  {t("pricesAreEstimates")} · {item.unit}
                 </p>
               </motion.div>
             );
@@ -150,7 +151,7 @@ export default function PricingPage() {
         {filtered.length === 0 && (
           <div className="text-center py-12 text-muted-foreground">
             <IndianRupee className="w-10 h-10 mx-auto mb-3 opacity-40" />
-            <p>No services found for your search</p>
+            <p>{t("noServicesFound")}</p>
           </div>
         )}
       </div>

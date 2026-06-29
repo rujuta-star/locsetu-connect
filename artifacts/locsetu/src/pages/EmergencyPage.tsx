@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Zap, Droplets, Hammer, Wrench, Lock, Phone, MessageCircle,
   Star, MapPin, CheckCircle, Clock, Shield, AlertTriangle
@@ -29,10 +30,11 @@ export default function EmergencyPage() {
   const { toast } = useToast();
   const { user } = useAuth();
   const [, navigate] = useLocation();
+  const { t } = useLanguage();
 
   const findWorkers = async () => {
     if (!selectedSkill) {
-      toast({ title: "Select a service", description: "Please choose what help you need.", variant: "destructive" });
+      toast({ title: t("selectServiceType"), description: t("pleaseSelectSkill"), variant: "destructive" });
       return;
     }
     setLoading(true);
@@ -45,9 +47,9 @@ export default function EmergencyPage() {
       });
       const data = await res.json();
       setWorkers(data);
-      if (data.length === 0) toast({ title: "No workers found", description: "Try a different location or skill." });
+      if (data.length === 0) toast({ title: t("noWorkersFound"), description: t("tryDifferentFilters") });
     } catch {
-      toast({ title: "Error", description: "Could not find workers.", variant: "destructive" });
+      toast({ title: t("error"), description: t("noWorkersFound"), variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -68,9 +70,9 @@ export default function EmergencyPage() {
           workerId: worker.userId,
         }),
       });
-      toast({ title: "Booked!", description: `${worker.name} has been notified. Estimated arrival: ${worker.estimatedArrival} mins.` });
+      toast({ title: t("bookInstantly"), description: `${worker.name} — ~${worker.estimatedArrival} min` });
     } catch {
-      toast({ title: "Error", description: "Booking failed.", variant: "destructive" });
+      toast({ title: t("error"), description: t("failedToUpdate"), variant: "destructive" });
     }
   };
 
@@ -88,10 +90,10 @@ export default function EmergencyPage() {
           <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
             <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-4 py-1.5 mb-4">
               <AlertTriangle className="w-4 h-4 animate-pulse" />
-              <span className="text-sm font-bold">Emergency Help — Fast Response</span>
+              <span className="text-sm font-bold">{t("emergencyFastResponse")}</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black mb-3">Need Urgent Help?</h1>
-            <p className="text-red-100 text-base">Find the nearest available worker within minutes</p>
+            <h1 className="text-3xl sm:text-4xl font-black mb-3">{t("needUrgentHelp")}</h1>
+            <p className="text-red-100 text-base">{t("findNearestWorker")}</p>
           </motion.div>
         </div>
       </div>
@@ -99,7 +101,7 @@ export default function EmergencyPage() {
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
         {/* Skill Selection */}
         <div>
-          <p className="font-bold text-lg mb-3">Select Service Type</p>
+          <p className="font-bold text-lg mb-3">{t("selectServiceType")}</p>
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
             {EMERGENCY_SKILLS.map(skill => {
               const Icon = skill.icon;
@@ -131,7 +133,7 @@ export default function EmergencyPage() {
             <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-red-500" />
             <input
               type="text"
-              placeholder="Your location / area"
+              placeholder={t("yourLocationArea")}
               value={location}
               onChange={e => setLocation(e.target.value)}
               className="w-full pl-10 pr-4 py-3 border-2 border-border rounded-xl focus:outline-none focus:border-red-400 bg-background"
@@ -142,14 +144,14 @@ export default function EmergencyPage() {
             disabled={loading}
             className="bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold px-6 rounded-xl hover:shadow-lg"
           >
-            {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : "Find Now"}
+            {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : t("findNow")}
           </Button>
         </div>
 
         {/* Sort */}
         {workers.length > 0 && (
           <div className="flex gap-2">
-            <span className="text-sm text-muted-foreground mr-2 self-center">Sort by:</span>
+            <span className="text-sm text-muted-foreground mr-2 self-center">{t("sortByLabel")}</span>
             {(["rating", "distance", "availability"] as const).map(s => (
               <button
                 key={s}
@@ -192,7 +194,7 @@ export default function EmergencyPage() {
                       <div className="flex items-center gap-2">
                         <h3 className="font-bold">{worker.name}</h3>
                         {worker.isVerified && <CheckCircle className="w-4 h-4 text-primary" />}
-                        <Badge className="bg-red-100 text-red-700 border-red-200 text-xs">Emergency</Badge>
+                        <Badge className="bg-red-100 text-red-700 border-red-200 text-xs">{t("emergencyBadge")}</Badge>
                       </div>
                       <div className="flex items-center gap-1 text-sm font-bold text-red-600">
                         <Clock className="w-3.5 h-3.5" />
@@ -202,7 +204,7 @@ export default function EmergencyPage() {
                     <div className="flex items-center gap-1 mt-1">
                       <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                       <span className="text-sm font-semibold">{worker.rating.toFixed(1)}</span>
-                      <span className="text-xs text-muted-foreground">({worker.reviewCount} reviews)</span>
+                      <span className="text-xs text-muted-foreground">({worker.reviewCount} {t("reviews")})</span>
                       <span className="mx-2 text-border">·</span>
                       <MapPin className="w-3 h-3 text-muted-foreground" />
                       <span className="text-xs text-muted-foreground">{worker.location}</span>
@@ -218,7 +220,7 @@ export default function EmergencyPage() {
                         <>
                           <a href={`tel:${worker.phone}`}>
                             <Button size="sm" variant="outline" className="gap-1.5 text-xs rounded-xl border-green-300 text-green-700 hover:bg-green-50">
-                              <Phone className="w-3.5 h-3.5" /> Call
+                              <Phone className="w-3.5 h-3.5" /> {t("callBtn")}
                             </Button>
                           </a>
                           <a href={`https://wa.me/${worker.phone?.replace(/[^0-9]/g, "")}`} target="_blank" rel="noopener noreferrer">
@@ -233,7 +235,7 @@ export default function EmergencyPage() {
                         onClick={() => bookInstantly(worker)}
                         className="gap-1.5 text-xs rounded-xl bg-gradient-to-r from-red-600 to-rose-600 text-white ml-auto"
                       >
-                        <Zap className="w-3.5 h-3.5" /> Book Instantly
+                        <Zap className="w-3.5 h-3.5" /> {t("bookInstantly")}
                       </Button>
                     </div>
                   </div>
@@ -246,8 +248,8 @@ export default function EmergencyPage() {
         {workers.length === 0 && !loading && (
           <div className="text-center py-16 text-muted-foreground">
             <Shield className="w-12 h-12 mx-auto mb-4 text-red-300" />
-            <p className="font-medium">Select a service type and tap "Find Now"</p>
-            <p className="text-sm mt-1">We'll find the nearest available professional</p>
+            <p className="font-medium">{t("selectServiceFindNow")}</p>
+            <p className="text-sm mt-1">{t("findNearestProfessional")}</p>
           </div>
         )}
       </div>

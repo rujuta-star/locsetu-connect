@@ -5,6 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { TrendingUp, Briefcase, Star, IndianRupee, Clock, Award } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation } from "wouter";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function IncomeDashboardPage() {
   const { user } = useAuth();
@@ -12,6 +13,7 @@ export default function IncomeDashboardPage() {
   const [jobs, setJobs] = useState<any[]>([]);
   const [workerProfile, setWorkerProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (!user) { navigate("/login"); return; }
@@ -30,8 +32,8 @@ export default function IncomeDashboardPage() {
       <div className="min-h-screen flex items-center justify-center text-center px-4">
         <div>
           <TrendingUp className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-          <h2 className="text-xl font-bold mb-2">Workers Only</h2>
-          <p className="text-muted-foreground">This dashboard is for registered workers.</p>
+          <h2 className="text-xl font-bold mb-2">{t("workersOnlyTitle")}</h2>
+          <p className="text-muted-foreground">{t("incomeDashboardWorkersOnly")}</p>
         </div>
       </div>
     );
@@ -41,7 +43,6 @@ export default function IncomeDashboardPage() {
   const inProgress = jobs.filter(j => j.status === "in_progress");
   const totalEarnings = completed.reduce((sum, j) => sum + (j.budget ?? 0), 0);
 
-  // Monthly earnings (last 6 months)
   const now = new Date();
   const monthlyData = Array.from({ length: 6 }).map((_, i) => {
     const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
@@ -56,12 +57,10 @@ export default function IncomeDashboardPage() {
     };
   });
 
-  // Most requested skill
   const skillCount: Record<string, number> = {};
   completed.forEach(j => { skillCount[j.skill] = (skillCount[j.skill] ?? 0) + 1; });
   const topSkill = Object.entries(skillCount).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "N/A";
 
-  // Weekly earnings (last 4 weeks)
   const weeklyData = Array.from({ length: 4 }).map((_, i) => {
     const weekEnd = new Date(now.getTime() - i * 7 * 24 * 3600 * 1000);
     const weekStart = new Date(weekEnd.getTime() - 7 * 24 * 3600 * 1000);
@@ -77,12 +76,12 @@ export default function IncomeDashboardPage() {
   }).reverse();
 
   const STATS = [
-    { label: "Total Jobs Done", value: completed.length, icon: Briefcase, color: "from-blue-500 to-indigo-600" },
-    { label: "Total Earnings", value: `₹${totalEarnings.toLocaleString()}`, icon: IndianRupee, color: "from-green-500 to-emerald-600" },
-    { label: "Active Jobs", value: inProgress.length, icon: Clock, color: "from-amber-500 to-orange-600" },
-    { label: "Avg Rating", value: workerProfile?.rating?.toFixed(1) ?? "—", icon: Star, color: "from-rose-500 to-pink-600" },
-    { label: "Top Skill", value: topSkill, icon: Award, color: "from-violet-500 to-purple-600", small: true },
-    { label: "Reviews", value: workerProfile?.reviewCount ?? 0, icon: TrendingUp, color: "from-teal-500 to-cyan-600" },
+    { label: t("incomeTotalJobsDone"), value: completed.length, icon: Briefcase, color: "from-blue-500 to-indigo-600" },
+    { label: t("incomeTotalEarnings"), value: `₹${totalEarnings.toLocaleString()}`, icon: IndianRupee, color: "from-green-500 to-emerald-600" },
+    { label: t("incomeActiveJobs"), value: inProgress.length, icon: Clock, color: "from-amber-500 to-orange-600" },
+    { label: t("incomeAvgRating"), value: workerProfile?.rating?.toFixed(1) ?? "—", icon: Star, color: "from-rose-500 to-pink-600" },
+    { label: t("incomeTopSkill"), value: topSkill, icon: Award, color: "from-violet-500 to-purple-600", small: true },
+    { label: t("incomeReviews"), value: workerProfile?.reviewCount ?? 0, icon: TrendingUp, color: "from-teal-500 to-cyan-600" },
   ];
 
   return (
@@ -90,8 +89,8 @@ export default function IncomeDashboardPage() {
       <div className="bg-gradient-to-br from-green-700 to-emerald-800 text-white py-10 px-4">
         <div className="max-w-4xl mx-auto">
           <TrendingUp className="w-8 h-8 mb-3" />
-          <h1 className="text-3xl font-black mb-1">Income Dashboard</h1>
-          <p className="text-green-100">Track your earnings and performance</p>
+          <h1 className="text-3xl font-black mb-1">{t("incomeDashboard")}</h1>
+          <p className="text-green-100">{t("trackEarningsPerformance")}</p>
           {workerProfile && (
             <Badge className="mt-3 bg-white/20 text-white border-white/30 capitalize">{workerProfile.verificationStatus}</Badge>
           )}
@@ -124,14 +123,14 @@ export default function IncomeDashboardPage() {
 
             {/* Monthly Chart */}
             <div className="bg-card border border-border rounded-2xl p-5 shadow-sm">
-              <h3 className="font-bold mb-1">Monthly Earnings (₹)</h3>
-              <p className="text-xs text-muted-foreground mb-5">Last 6 months</p>
+              <h3 className="font-bold mb-1">{t("monthlyEarningsLabel")}</h3>
+              <p className="text-xs text-muted-foreground mb-5">{t("last6MonthsLabel")}</p>
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={monthlyData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                   <XAxis dataKey="month" tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
-                  <Tooltip formatter={(v: any) => [`₹${v}`, "Earnings"]} contentStyle={{ borderRadius: "12px", border: "1px solid hsl(var(--border))", fontSize: 12 }} />
+                  <Tooltip formatter={(v: any) => [`₹${v}`, t("incomeTotalEarnings")]} contentStyle={{ borderRadius: "12px", border: "1px solid hsl(var(--border))", fontSize: 12 }} />
                   <Bar dataKey="earnings" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} maxBarSize={40} />
                 </BarChart>
               </ResponsiveContainer>
@@ -139,14 +138,14 @@ export default function IncomeDashboardPage() {
 
             {/* Weekly Chart */}
             <div className="bg-card border border-border rounded-2xl p-5 shadow-sm">
-              <h3 className="font-bold mb-1">Weekly Jobs</h3>
-              <p className="text-xs text-muted-foreground mb-5">Last 4 weeks</p>
+              <h3 className="font-bold mb-1">{t("weeklyJobsLabel")}</h3>
+              <p className="text-xs text-muted-foreground mb-5">{t("last4WeeksLabel")}</p>
               <ResponsiveContainer width="100%" height={160}>
                 <BarChart data={weeklyData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                   <XAxis dataKey="week" tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
-                  <Tooltip formatter={(v: any) => [v, "Jobs"]} contentStyle={{ borderRadius: "12px", border: "1px solid hsl(var(--border))", fontSize: 12 }} />
+                  <Tooltip formatter={(v: any) => [v, t("incomeActiveJobs")]} contentStyle={{ borderRadius: "12px", border: "1px solid hsl(var(--border))", fontSize: 12 }} />
                   <Bar dataKey="jobs" fill="hsl(142, 71%, 45%)" radius={[6, 6, 0, 0]} maxBarSize={40} />
                 </BarChart>
               </ResponsiveContainer>
@@ -154,7 +153,7 @@ export default function IncomeDashboardPage() {
 
             {/* Recent Jobs */}
             <div className="bg-card border border-border rounded-2xl p-5 shadow-sm">
-              <h3 className="font-bold mb-4">Recent Completed Jobs</h3>
+              <h3 className="font-bold mb-4">{t("recentCompletedJobsTitle")}</h3>
               {completed.slice(0, 5).length > 0 ? (
                 <div className="space-y-3">
                   {completed.slice(0, 5).map(job => (
@@ -171,7 +170,7 @@ export default function IncomeDashboardPage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-muted-foreground text-sm text-center py-8">No completed jobs yet</p>
+                <p className="text-muted-foreground text-sm text-center py-8">{t("noCompletedJobsYet")}</p>
               )}
             </div>
           </>
