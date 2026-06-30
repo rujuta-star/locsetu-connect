@@ -1,0 +1,162 @@
+The language switcher currently works only partially.
+
+This is NOT a request to add new translations.
+
+This is a request to perform a complete localization audit and make the ENTIRE application multilingual.
+
+### Goal
+
+When the user changes the language, EVERY visible piece of text in the application must immediately change to the selected language.
+
+No English text should remain anywhere unless it is intentionally part of user-generated content.
+
+---
+
+## Perform a complete localization audit.
+
+Search the ENTIRE codebase for:
+
+* Hardcoded strings
+* Static labels
+* Button text
+* Menu text
+* Navbar
+* Sidebar
+* Footer
+* Cards
+* Forms
+* Dialogs
+* Alerts
+* Toasts
+* Validation messages
+* Error messages
+* Loading messages
+* Empty states
+* Dashboard widgets
+* Profile pages
+* Worker pages
+* Customer pages
+* Admin pages
+* Landing page
+* Home page
+* Job pages
+* Search filters
+* Pagination
+* Settings
+* Notifications
+
+EVERY visible string must come from the translation system.
+
+---
+
+## Verify every page uses the language context.
+
+Check every page and component.
+
+If a page does not use the language provider or translation hook, integrate it correctly.
+
+No component should contain hardcoded English UI text.
+
+---
+
+## Verify translation files.
+
+Ensure English, Hindi and Marathi contain exactly the same keys.
+
+Find:
+
+* Missing keys
+* Duplicate keys
+* Unused keys
+* Incorrect mappings
+
+Automatically fix them.
+
+---
+
+## Verify dynamic text.
+
+Translate:
+
+* Success messages
+* Error messages
+* Validation messages
+* Toasts
+* Confirmation dialogs
+* Empty states
+* Loading indicators
+
+Do not leave these in English.
+
+---
+
+## Landing Page
+
+Pay special attention to the landing page.
+
+Currently it remains in English after changing the language.
+
+Find every hardcoded string on the landing page and replace it with translation keys.
+
+Ensure:
+
+* Hero section
+* Features
+* Buttons
+* Cards
+* Statistics
+* Testimonials
+* FAQ
+* Footer
+* Search
+* Service Categories
+
+all translate instantly.
+
+---
+
+## Navigation
+
+Verify:
+
+* Navbar
+* Mobile menu
+* Sidebar
+* User menu
+
+update immediately when language changes.
+
+No page refresh should be required.
+
+---
+
+## Runtime Verification
+
+After completing the implementation:
+
+Automatically switch between:
+
+English
+
+↓
+
+Hindi
+
+↓
+
+Marathi
+
+Verify every page.
+
+Generate a report listing:
+
+* Total pages checked
+* Total components checked
+* Hardcoded strings found
+* Hardcoded strings replaced
+* Translation keys added
+* Remaining untranslated strings (if any)
+
+The final goal is 100% localization coverage.
+
+Do not stop until every user-facing string is translated correctly.
